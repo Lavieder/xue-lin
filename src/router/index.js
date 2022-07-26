@@ -8,7 +8,7 @@ const User = () => import('views/User.vue')
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'home1',
     component: Home,
     meta: {
       title: '首页'
@@ -16,7 +16,7 @@ const routes = [
   },
   {
     path: '/home',
-    name: 'home',
+    name: 'home2',
     component: Home,
     meta: {
       title: '首页'

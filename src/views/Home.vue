@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <search></search>
-    <swiper :banner-data="bannerData"></swiper>
+    <swiper :banner-data="bannerData" :recommend-data="recommendData"></swiper>
   </div>
 </template>
 
@@ -18,12 +18,20 @@ export default {
   },
   setup () {
     const bannerData = ref([])
+    const recommendData = ref([])
     onMounted(async () => {
       const result = await getHomeAllData()
+      console.log(result)
       bannerData.value = result.data.slides
+      recommendData.value = result.data.goods.data
+      recommendData.value.length = 5
+      recommendData.value.splice(0, 0, '')
+      recommendData.value.push('')
+      console.log(recommendData.value)
     })
     return {
-      bannerData
+      bannerData,
+      recommendData
     }
   }
 }
