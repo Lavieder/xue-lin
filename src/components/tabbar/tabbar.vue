@@ -1,14 +1,12 @@
 <template>
-  <div>
-    <van-tabbar v-model="active">
-      <van-tabbar-item v-for="tab in tabs" :key="tab.path" :to="tab.path">
-        <span>{{tab.name}}</span>
-        <template #icon='props'>
-          <i :class="tab.iconfont+' '+ `iconfont ${props.active ? icon.active : ''}`"></i>
-        </template>
-      </van-tabbar-item>
-    </van-tabbar>
-  </div>
+  <van-tabbar v-model="active">
+    <van-tabbar-item v-for="tab in tabs" :key="tab.path" :to="tab.path">
+      <span>{{tab.name}}</span>
+      <template #icon='props'>
+        <i :class="tab.iconfont+' '+ `iconfont ${props.active ? icon.active : ''}`"></i>
+      </template>
+    </van-tabbar-item>
+  </van-tabbar>
 </template>
 
 <script>

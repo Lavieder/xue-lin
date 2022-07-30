@@ -17,5 +17,8 @@ export default ({
 </script>
 
 <style lang="scss">
-@import 'assets/css/base.scss';
+#app {
+  padding-bottom: 55px;
+  box-sizing: border-box;
+}
 </style>
