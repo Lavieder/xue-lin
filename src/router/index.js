@@ -1,22 +1,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const Home = () => import('views/Home.vue')
-const Catefory = () => import('views/Catefory.vue')
+const Category = () => import('views/Category.vue')
 const Cart = () => import('views/Cart.vue')
 const User = () => import('views/User.vue')
 
 const routes = [
   {
     path: '/',
-    name: 'home1',
-    component: Home,
-    meta: {
-      title: '首页'
-    }
-  },
-  {
-    path: '/home',
-    name: 'home2',
+    name: 'home',
     component: Home,
     meta: {
       title: '首页'
@@ -25,7 +17,7 @@ const routes = [
   {
     path: '/category',
     name: 'category',
-    component: Catefory,
+    component: Category,
     meta: {
       title: '分类'
     }

@@ -3,7 +3,7 @@ import axios from 'axios'
 export function request (config) {
   const instance = axios.create({
     baseURL: 'https://api.shop.eduwork.cn/',
-    timeout: 3000
+    timeout: 8000
   })
 
   // 请求拦截

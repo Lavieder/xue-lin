@@ -7,7 +7,7 @@
     @slideChange="onSlideChange"
   >
     <swiper-slide v-for="(item,index) in recommendData" :key="index">
-      <img :src="item.cover_url" :alt="item.title"/>
+      <img v-lazy="item.cover_url" :alt="item.title"/>
     </swiper-slide>
   </swiper>
   <div class="book-text-wrap">

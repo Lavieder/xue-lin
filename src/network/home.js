@@ -10,6 +10,6 @@ export function getHomeAllData () {
 export function getTabData (type, page) {
   return request({
     method: 'GET',
-    url: '/api/index?' + type + '=1&page=1'
+    url: '/api/index?' + type + '=1&page=' + page
   })
 }

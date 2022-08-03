@@ -1,27 +1,33 @@
 <template>
   <div class="tab">
     <van-tabs v-model:active="active" @change="onTabChange" swipeable sticky shrink>
-      <van-tab v-for="(item) in tabList" :title="item.name" :key="item.id">
-        <div class="book-item-wrap">
-          <template v-for="(item, index) in tabContent" :key="index">
-            <book-item :book-item="item"></book-item>
-          </template>
-        </div>
+      <van-tab v-for="(item,index) in tabList" :title="item.name" :key="index" >
+        <van-list
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          :offset="offset"
+          :immediate-check="false"
+          @load="onLoad"
+        >
+          <div class="book-item-wrap" ref="list">
+            <lazy-component class="lazy-book" v-for="(item, index) in tabContent" :key="index">
+              <book-item :book-item="item"></book-item>
+            </lazy-component>
+          </div>
+        </van-list>
       </van-tab>
     </van-tabs>
   </div>
 </template>
 
 <script>
-import { Tab, Tabs } from 'vant'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import BookItem from 'components/bookItem/bookItem'
 
 export default {
   name: 'Tab',
   components: {
-    [Tab.name]: Tab,
-    [Tabs.name]: Tabs,
     BookItem
   },
   props: {
@@ -32,17 +38,40 @@ export default {
     tabContent: {
       type: Array,
       default: () => []
+    },
+    loadStatus: {
+      type: Object,
+      default: () => {}
     }
   },
   setup (props, context) {
+    // const instance = getCurrentInstance()
     const { emit } = context
-    console.log(props.tabContent)
     const active = ref(0)
+    const loading = ref(false)
+    const finished = ref(false)
+    const offset = ref(-73)
     const onTabChange = (index) => {
+      active.value = index
       emit('onCurrentTabIndex', index)
+      console.log(active.value)
     }
+    const onLoad = () => {
+      emit('onLoadBook', active.value)
+      loading.value = props.loadStatus.loading
+      finished.value = props.loadStatus.finished
+    }
+    onMounted(() => {
+      window.addEventListener('scroll', () => {
+        // console.log(instance.refs.list[0].offsetHeight)
+        // const height = instance.refs.list[0].offsetHeight
+        // const scrollTop = document.documentElement.scrollTop
+        // const scrollHeight = document.documentElement.scrollHeight
+        // console.log('height: ' + height, 'scrollTop: ' + scrollTop, 'scrollHeight: ' + scrollHeight, '差: ' + (height - scrollTop))
+      }, true)
+    })
     return {
-      active, onTabChange
+      active, onTabChange, loading, finished, onLoad, offset
     }
   }
 }
@@ -82,12 +111,20 @@ export default {
   }
   .van-tabs__content {
     .book-item-wrap {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-between;
       padding: 0 12px;
       margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      .lazy-book {
+        width: 48%;
+        margin-top: 12px;
+      }
+      .van-list__loading,
+      .van-list__finished-text {
+        width: 100%;
+      }
     }
   }
 }

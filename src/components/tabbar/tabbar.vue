@@ -1,16 +1,17 @@
 <template>
-  <van-tabbar v-model="active">
-    <van-tabbar-item v-for="tab in tabs" :key="tab.path" :to="tab.path">
-      <span>{{tab.name}}</span>
+  <van-tabbar v-model="active" route>
+    <van-tabbar-item replace v-for="tab in tabs" :key="tab.path" :to="tab.path" :name="tab.name">
+      <span >{{tab.name}}</span>
       <template #icon='props'>
-        <i :class="tab.iconfont+' '+ `iconfont ${props.active ? icon.active : ''}`"></i>
+        <i :class="tab.iconfont+' '+ `iconfont ${props.active ? 'icon-active' : ''}`"></i>
       </template>
     </van-tabbar-item>
   </van-tabbar>
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { reactive, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { Tabbar, TabbarItem } from 'vant'
 
 export default {
@@ -19,14 +20,11 @@ export default {
     [TabbarItem.name]: TabbarItem
   },
   setup () {
-    const active = ref(0)
-    const icon = {
-      active: 'icon-active'
-    }
+    const route = useRoute()
     const tabs = reactive([
       {
         name: '首页',
-        path: '/home',
+        path: '/',
         iconfont: 'icon-home'
       },
       {
@@ -45,8 +43,13 @@ export default {
         iconfont: 'icon-wode'
       }
     ])
+    const active = computed({
+      set: () => {},
+      get: () => {
+        return route.path
+      }
+    })
     return {
-      icon,
       active,
       tabs
     }

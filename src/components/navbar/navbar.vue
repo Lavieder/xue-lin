@@ -1,6 +1,6 @@
 <template>
-  <div>
-    Category
+  <div class="nav-bar">
+    <span></span>
   </div>
 </template>
 

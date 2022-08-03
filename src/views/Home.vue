@@ -6,7 +6,13 @@
       <div class="title">猜你喜欢</div>
       <guess-you-like :recommend-data="recommendData" />
     </div>
-    <tab :tab-list="tabList" :tab-content="currentTabData" @onCurrentTabIndex="onCurrentTabIndex"></tab>
+    <tab
+      :tab-list="tabList"
+      :tab-content="currentTabData"
+      @onCurrentTabIndex="onCurrentTabIndex"
+      @onLoadBook="onLoadBook"
+      :load-status="loadStatus"
+    ></tab>
   </div>
 </template>
 
@@ -36,32 +42,69 @@ export default {
       { id: 2, name: '热销' },
       { id: 3, name: '最新' }
     ])
+    // tab初始加载页码
+    const initPage = 2
+    let newPage = 2
+    let oldTab = 'recommend'
+    const pageStatus = {}
+    // 加载状态
+    const loadStatus = ref({
+      loading: false,
+      finished: false
+    })
     const currentTab = ref('recommend')
     const onCurrentTabIndex = (index) => {
       currentTab.value = (index === 0 ? 'recommend' : index === 1 ? 'sales' : 'news')
+      // 把页码存在对应tab页
+      pageStatus[oldTab] = newPage
+      return currentTab.value
     }
     const currentTabData = computed(() => {
       return tabContentData[currentTab.value]
     })
+    const onLoadBook = async (active) => {
+      const activeTab = onCurrentTabIndex(active)
+      if (loadStatus.value.finished || tabContentData[activeTab].length >= 20) { return }
+      if (pageStatus[activeTab]) {
+        newPage = pageStatus[activeTab] + 1
+      } else {
+        if (activeTab !== oldTab) {
+          newPage = initPage + 1
+        } else {
+          ++newPage
+        }
+      }
+      const result = await getTabData(activeTab, newPage)
+      if (result.status === 200) {
+        const newData = result.data.goods.data
+        tabContentData[activeTab].push(...newData)
+        loadStatus.value.loading = false
+        if (tabContentData.recommend.length >= 20 && tabContentData.sales.length >= 20 && tabContentData.news.length >= 20) {
+          loadStatus.value.finished = true
+        }
+        oldTab = activeTab
+      }
+    }
     onMounted(async () => {
       const homeResult = await getHomeAllData()
-      let res = await getTabData('recommend', 2)
-      tabContentData.recommend = res.data.goods.data
-      res = await getTabData('sales', 2)
-      tabContentData.sales = res.data.goods.data
-      res = await getTabData('new', 2)
-      tabContentData.news = res.data.goods.data
-      console.log(tabContentData)
       bannerData.value = homeResult.data.slides
       recommendData.value = homeResult.data.goods.data
       recommendData.value.length = 5
+      let res = await getTabData('recommend', initPage)
+      tabContentData.recommend = res.data.goods.data
+      res = await getTabData('sales', initPage)
+      tabContentData.sales = res.data.goods.data
+      res = await getTabData('new', initPage)
+      tabContentData.news = res.data.goods.data
     })
     return {
       bannerData,
       recommendData,
       tabList,
       currentTabData,
-      onCurrentTabIndex
+      onCurrentTabIndex,
+      onLoadBook,
+      loadStatus
     }
   }
 }

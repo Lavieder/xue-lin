@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3543714 */
-  src: url('iconfont.woff2?t=1658738581984') format('woff2'),
-       url('iconfont.woff?t=1658738581984') format('woff'),
-       url('iconfont.ttf?t=1658738581984') format('truetype'),
-       url('iconfont.svg?t=1658738581984#iconfont') format('svg');
+  src: url('iconfont.woff2?t=1659539109967') format('woff2'),
+       url('iconfont.woff?t=1659539109967') format('woff'),
+       url('iconfont.ttf?t=1659539109967') format('truetype'),
+       url('iconfont.svg?t=1659539109967#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-caretdown:before {
+  content: "\e603";
+}
+
+.icon-caretup:before {
+  content: "\e607";
 }
 
 .icon-search:before {

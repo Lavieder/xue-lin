@@ -1,7 +1,7 @@
 <template>
   <div class="book-item">
     <div class="book-img">
-      <img :src="bookItem.cover_url" />
+      <img v-lazy="bookItem.cover_url" />
     </div>
     <p class="book-name">{{bookItem.title}}</p>
     <p class="description">{{bookItem.description}}</p>
@@ -20,6 +20,8 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  components: {
   }
 }
 </script>
@@ -27,8 +29,7 @@ export default {
 <style lang="scss" scoped>
 .book-item{
   padding: 12px;
-  margin-top: 12px;
-  width: 48%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   box-shadow: 0px -1px 10px #e2e2e2;
