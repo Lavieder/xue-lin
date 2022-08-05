@@ -4,25 +4,28 @@
     <swipe :banner-data="bannerData" />
     <div class="guess-like">
       <div class="title">猜你喜欢</div>
-      <guess-you-like :recommend-data="recommendData" />
+      <guess-you-like :recommend-data="recommendData" @onGoToDetail="onGoToDetail"/>
     </div>
     <tab
       :tab-list="tabList"
       :tab-content="currentTabData"
       @onCurrentTabIndex="onCurrentTabIndex"
       @onLoadBook="onLoadBook"
+      @onGoToDetail="onGoToDetail"
       :load-status="loadStatus"
     ></tab>
   </div>
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onActivated, onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import { getHomeAllData, getTabData } from 'network/home'
 import Search from 'components/search/search'
 import Swipe from 'components/home/swipe'
 import GuessYouLike from 'components/home/guessYouLike'
 import Tab from 'components/tab/tab'
+import { useRoute, useRouter } from 'vue-router'
 
 export default {
   name: 'Home',
@@ -30,6 +33,12 @@ export default {
     Search, Swipe, GuessYouLike, Tab
   },
   setup () {
+    // 监听路径
+    const store = useStore()
+    const route = useRoute()
+    const setCurrentPath = () => {
+      store.commit('SET_CURRENT_PATH', route.name)
+    }
     const bannerData = ref([])
     const recommendData = ref([])
     const tabContentData = reactive({
@@ -62,6 +71,7 @@ export default {
     const currentTabData = computed(() => {
       return tabContentData[currentTab.value]
     })
+    // 上拉加载
     const onLoadBook = async (active) => {
       const activeTab = onCurrentTabIndex(active)
       if (loadStatus.value.finished || tabContentData[activeTab].length >= 20) { return }
@@ -85,6 +95,21 @@ export default {
         oldTab = activeTab
       }
     }
+    // 商品详情
+    const router = useRouter()
+    const onGoToDetail = (id) => {
+      router.push({
+        name: 'detail',
+        params: { id: id }
+      })
+    }
+    onBeforeMount(() => {
+      setCurrentPath()
+    })
+    // 只有activated 生命周期在组件使用keep-alive缓存后也能执行相应操作
+    onActivated(() => {
+      setCurrentPath()
+    })
     onMounted(async () => {
       const homeResult = await getHomeAllData()
       bannerData.value = homeResult.data.slides
@@ -102,9 +127,10 @@ export default {
       recommendData,
       tabList,
       currentTabData,
+      loadStatus,
       onCurrentTabIndex,
       onLoadBook,
-      loadStatus
+      onGoToDetail
     }
   }
 }

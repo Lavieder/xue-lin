@@ -28,7 +28,8 @@ module.exports = defineConfig({
         components: '@/components',
         network: '@/network',
         utils: '@/utils',
-        views: '@/views'
+        views: '@/views',
+        mixins: '@/mixins'
       }
     }
   }

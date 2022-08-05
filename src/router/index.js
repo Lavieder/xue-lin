@@ -4,12 +4,14 @@ const Home = () => import('views/Home.vue')
 const Category = () => import('views/Category.vue')
 const Cart = () => import('views/Cart.vue')
 const User = () => import('views/User.vue')
+const BookDetail = () => import('views/BookDetail.vue')
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: Home,
+    children: [],
     meta: {
       title: '首页'
     }
@@ -36,6 +38,14 @@ const routes = [
     component: User,
     meta: {
       title: '我的'
+    }
+  },
+  {
+    path: '/detail/:id',
+    name: 'detail',
+    component: BookDetail,
+    meta: {
+      title: '书籍详情'
     }
   }
 ]

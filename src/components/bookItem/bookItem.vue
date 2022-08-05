@@ -6,7 +6,7 @@
     <p class="book-name">{{bookItem.title}}</p>
     <p class="description">{{bookItem.description}}</p>
     <div class="price-icon">
-      <span class="price">￥{{bookItem.price}}</span>
+      <span class="price">￥{{bookItem.price.toFixed(2)}}</span>
       <i class="iconfont icon-shinshopgouwuche"></i>
     </div>
   </div>

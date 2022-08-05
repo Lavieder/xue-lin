@@ -6,7 +6,7 @@
     @swiper="onSwiper"
     @slideChange="onSlideChange"
   >
-    <swiper-slide v-for="(item,index) in recommendData" :key="index">
+    <swiper-slide v-for="(item,index) in recommendData" :key="index" @click="onGoToDetail(item.id,index)">
       <img v-lazy="item.cover_url" :alt="item.title"/>
     </swiper-slide>
   </swiper>
@@ -43,7 +43,9 @@ export default {
     Swiper,
     SwiperSlide
   },
+  emits: ['onGoToDetail'],
   setup (props, context) {
+    const { emit } = context
     const initialSlide = ref(1)
     const onSwiper = (swiper) => {
       initialSlide.value = swiper.activeIndex
@@ -51,10 +53,16 @@ export default {
     const onSlideChange = (swiper) => {
       initialSlide.value = swiper.activeIndex
     }
+    const onGoToDetail = (id, index) => {
+      if (initialSlide.value === index) {
+        emit('onGoToDetail', id, index)
+      }
+    }
     return {
       initialSlide,
       onSwiper,
-      onSlideChange
+      onSlideChange,
+      onGoToDetail
     }
   }
 }

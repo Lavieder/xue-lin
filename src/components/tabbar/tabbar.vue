@@ -1,6 +1,10 @@
 <template>
   <van-tabbar v-model="active" route>
-    <van-tabbar-item replace v-for="tab in tabs" :key="tab.path" :to="tab.path" :name="tab.name">
+    <van-tabbar-item replace v-for="tab in tabs"
+      :key="tab.path"
+      :to="tab.path"
+      :name="tab.name"
+    >
       <span >{{tab.name}}</span>
       <template #icon='props'>
         <i :class="tab.iconfont+' '+ `iconfont ${props.active ? 'icon-active' : ''}`"></i>
@@ -12,12 +16,9 @@
 <script>
 import { reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { Tabbar, TabbarItem } from 'vant'
 
 export default {
   components: {
-    [Tabbar.name]: Tabbar,
-    [TabbarItem.name]: TabbarItem
   },
   setup () {
     const route = useRoute()
@@ -60,6 +61,8 @@ export default {
 <style lang="scss" scoped>
   .van-tabbar {
     height: 55px;
+    box-shadow: -1px 0 10px #ececec;
+    z-index: 100;
     .van-tabbar-item {
       color: #7a7a7a;
     }

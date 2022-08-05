@@ -24,6 +24,7 @@
                 :price="item.price.toFixed(2)"
                 :title="item.title"
                 :thumb="item.cover_url"
+                @click="onGoToDetail(item.id)"
               />
             </template>
             <template v-else>
@@ -40,13 +41,21 @@
 import { Sidebar, SidebarItem } from 'vant'
 import { reactive, ref } from '@vue/reactivity'
 import { getCateData } from 'network/category'
-import { computed, getCurrentInstance, onMounted } from '@vue/runtime-core'
+import { computed, onActivated, onBeforeMount, getCurrentInstance, onMounted } from '@vue/runtime-core'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 export default {
   components: {
     [Sidebar.name]: Sidebar,
     [SidebarItem.name]: SidebarItem
   },
   setup () {
+    const store = useStore()
+    const route = useRoute()
+    const setCurrentPath = () => {
+      // console.log(route.name)
+      store.commit('SET_CURRENT_PATH', route.name)
+    }
     const active = ref(0)
     // tab筛选激活状态，默认按销量升序排序, true:升序, false:降序
     const tabActive = ref(0)
@@ -133,6 +142,20 @@ export default {
         categoryDate.goods = res.data.goods.data
       }
     }
+    // 跳转到商品详情页面
+    const router = useRouter()
+    const onGoToDetail = (id) => {
+      router.push({
+        name: 'detail',
+        params: { id: id }
+      })
+    }
+    onBeforeMount(() => {
+      setCurrentPath()
+    })
+    onActivated(() => {
+      setCurrentPath()
+    })
     onMounted(async () => {
       onSidebarChange(recommendCate.id, active.value, 1)
       getNavHeight()
@@ -148,7 +171,8 @@ export default {
       tabActive,
       offsetTop,
       onTabChange,
-      onSidebarChange
+      onSidebarChange,
+      onGoToDetail
     }
   }
 

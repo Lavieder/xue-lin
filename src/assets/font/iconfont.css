@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3543714 */
-  src: url('iconfont.woff2?t=1659539109967') format('woff2'),
-       url('iconfont.woff?t=1659539109967') format('woff'),
-       url('iconfont.ttf?t=1659539109967') format('truetype'),
-       url('iconfont.svg?t=1659539109967#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/c/font_3543714_on17yg6ea1j.woff2?t=1659724456592') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3543714_on17yg6ea1j.woff?t=1659724456592') format('woff'),
+       url('//at.alicdn.com/t/c/font_3543714_on17yg6ea1j.ttf?t=1659724456592') format('truetype'),
+       url('//at.alicdn.com/t/c/font_3543714_on17yg6ea1j.svg?t=1659724456592#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,30 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-left:before {
+  content: "\e6da";
+}
+
+.icon-share:before {
+  content: "\e631";
+}
+
+.icon-fenxiang:before {
+  content: "\e632";
+}
+
+.icon-gengduo:before {
+  content: "\e64d";
+}
+
+.icon-fenxiang2:before {
+  content: "\e623";
+}
+
+.icon-gou:before {
+  content: "\e611";
 }
 
 .icon-caretdown:before {
@@ -73,4 +97,3 @@
 .icon-shinshopshouhuodizhi:before {
   content: "\e627";
 }
-

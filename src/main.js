@@ -2,7 +2,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { Lazyload, NavBar, Tab, Tabs, List, Card } from 'vant'
+import {
+  Tabbar, TabbarItem, NavBar, List,
+  Lazyload, Tab, Tabs, Card, Stepper, SubmitBar,
+  ActionBar, ActionBarIcon, ActionBarButton
+} from 'vant'
 
 // 引入iconfont样式
 import 'assets/font/iconfont.css'
@@ -11,4 +15,8 @@ import 'amfe-flexible'
 
 createApp(App).use(store).use(router).use(Lazyload, {
   lazyComponent: true
-}).use(NavBar, Tab, Tabs, List, Card).mount('#app')
+}).use(
+  Tabbar, TabbarItem, NavBar, List,
+  Tab, Tabs, Card, Stepper, SubmitBar,
+  ActionBar, ActionBarIcon, ActionBarButton
+).mount('#app')

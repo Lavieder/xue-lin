@@ -12,7 +12,7 @@
         >
           <div class="book-item-wrap" ref="list">
             <lazy-component class="lazy-book" v-for="(item, index) in tabContent" :key="index">
-              <book-item :book-item="item"></book-item>
+              <book-item :book-item="item" @click="onGoToDetail(item.id)"></book-item>
             </lazy-component>
           </div>
         </van-list>
@@ -44,6 +44,7 @@ export default {
       default: () => {}
     }
   },
+  meits: ['onCurrentTabIndex', 'onLoadBook', 'onGoToDetail'],
   setup (props, context) {
     // const instance = getCurrentInstance()
     const { emit } = context
@@ -54,12 +55,14 @@ export default {
     const onTabChange = (index) => {
       active.value = index
       emit('onCurrentTabIndex', index)
-      console.log(active.value)
     }
     const onLoad = () => {
       emit('onLoadBook', active.value)
       loading.value = props.loadStatus.loading
       finished.value = props.loadStatus.finished
+    }
+    const onGoToDetail = (id) => {
+      emit('onGoToDetail', id)
     }
     onMounted(() => {
       window.addEventListener('scroll', () => {
@@ -71,7 +74,7 @@ export default {
       }, true)
     })
     return {
-      active, onTabChange, loading, finished, onLoad, offset
+      active, onTabChange, loading, finished, onLoad, offset, onGoToDetail
     }
   }
 }
