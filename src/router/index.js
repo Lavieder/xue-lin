@@ -13,6 +13,7 @@ const routes = [
     component: Home,
     children: [],
     meta: {
+      index: 1,
       title: '首页'
     }
   },
@@ -21,6 +22,7 @@ const routes = [
     name: 'category',
     component: Category,
     meta: {
+      index: 2,
       title: '分类'
     }
   },
@@ -29,6 +31,7 @@ const routes = [
     name: 'cart',
     component: Cart,
     meta: {
+      index: 3,
       title: '购物车'
     }
   },
@@ -37,6 +40,7 @@ const routes = [
     name: 'user',
     component: User,
     meta: {
+      index: 4,
       title: '我的'
     }
   },
@@ -45,6 +49,7 @@ const routes = [
     name: 'detail',
     component: BookDetail,
     meta: {
+      index: 5,
       title: '书籍详情'
     }
   }
@@ -56,6 +61,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // console.log(to, from)
   document.title = to.meta.title
   next()
 })

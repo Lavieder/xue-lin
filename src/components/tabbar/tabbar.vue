@@ -62,7 +62,7 @@ export default {
   .van-tabbar {
     height: 55px;
     box-shadow: -1px 0 10px #ececec;
-    z-index: 100;
+    z-index: 1;
     .van-tabbar-item {
       color: #7a7a7a;
     }

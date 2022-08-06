@@ -1,6 +1,6 @@
 <template>
   <div class="tab">
-    <van-tabs v-model:active="active" @change="onTabChange" swipeable sticky shrink>
+    <van-tabs v-model:active="active" @change="onTabChange" swipeable sticky shrink @scroll="onScroll">
       <van-tab v-for="(item,index) in tabList" :title="item.name" :key="index" >
         <van-list
           v-model:loading="loading"
@@ -44,7 +44,7 @@ export default {
       default: () => {}
     }
   },
-  meits: ['onCurrentTabIndex', 'onLoadBook', 'onGoToDetail'],
+  emits: ['onCurrentTabIndex', 'onLoadBook', 'onGoToDetail', 'onTabScroll'],
   setup (props, context) {
     // const instance = getCurrentInstance()
     const { emit } = context
@@ -64,17 +64,23 @@ export default {
     const onGoToDetail = (id) => {
       emit('onGoToDetail', id)
     }
+    const onScroll = (scroll) => {
+      // scrollTop: number, isFixed: boolean
+      // console.log(scroll)
+      emit('onTabScroll', scroll)
+    }
     onMounted(() => {
-      window.addEventListener('scroll', () => {
-        // console.log(instance.refs.list[0].offsetHeight)
-        // const height = instance.refs.list[0].offsetHeight
-        // const scrollTop = document.documentElement.scrollTop
-        // const scrollHeight = document.documentElement.scrollHeight
-        // console.log('height: ' + height, 'scrollTop: ' + scrollTop, 'scrollHeight: ' + scrollHeight, '差: ' + (height - scrollTop))
-      }, true)
+      // window.addEventListener('scroll', () => {
+      //   console.log(instance.refs.list[0].offsetHeight)
+      //   console.log(document.body)
+      //   const height = instance.refs.list[0].offsetHeight
+      //   const scrollTop = document.documentElement.scrollTop
+      //   const scrollHeight = document.documentElement.scrollHeight
+      //   console.log('height: ' + height, 'scrollTop: ' + scrollTop, 'scrollHeight: ' + scrollHeight, '差: ' + (height - scrollTop))
+      // }, true)
     })
     return {
-      active, onTabChange, loading, finished, onLoad, offset, onGoToDetail
+      active, onTabChange, loading, finished, onLoad, offset, onGoToDetail, onScroll
     }
   }
 }

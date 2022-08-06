@@ -222,7 +222,8 @@ export default {
       flex: 1;
       overflow-y: scroll;
       padding-right: 12px;
-      -ms-overflow-style: none;
+      scrollbar-width: none; // Firefox
+      -ms-overflow-style: none; // IE and Edge
       overflow: -moz-scrollbars-none;
       .van-tabs {
         .van-tabs__wrap {
@@ -291,6 +292,7 @@ export default {
         color: $color-sub-theme;
       }
     }
+    // Hide scrollbar for Chrome, Safari and Opera
     .van-sidebar::-webkit-scrollbar,
     .category-content::-webkit-scrollbar {
       display: none;

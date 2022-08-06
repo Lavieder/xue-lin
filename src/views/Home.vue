@@ -12,6 +12,7 @@
       @onCurrentTabIndex="onCurrentTabIndex"
       @onLoadBook="onLoadBook"
       @onGoToDetail="onGoToDetail"
+      @onTabScroll="onTabScroll"
       :load-status="loadStatus"
     ></tab>
   </div>
@@ -103,6 +104,9 @@ export default {
         params: { id: id }
       })
     }
+    const onTabScroll = (scroll) => {
+      // console.log(scroll)
+    }
     onBeforeMount(() => {
       setCurrentPath()
     })
@@ -130,13 +134,23 @@ export default {
       loadStatus,
       onCurrentTabIndex,
       onLoadBook,
-      onGoToDetail
+      onGoToDetail,
+      onTabScroll
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.home {
+  position: relative;
+  // width: 375px;
+  // height: 612px;
+  // overflow-y: scroll;
+  // overflow-x: hidden;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE and Edge
+  overflow: -moz-scrollbars-none;
   .guess-like {
     margin-top: 30px;
     .title {
@@ -146,4 +160,10 @@ export default {
       font-weight: 600;
     }
   }
+}
+// Hide scrollbar for Chrome, Safari and Opera
+.home::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+}
 </style>

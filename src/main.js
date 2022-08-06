@@ -5,7 +5,8 @@ import store from './store'
 import {
   Tabbar, TabbarItem, NavBar, List,
   Lazyload, Tab, Tabs, Card, Stepper, SubmitBar,
-  ActionBar, ActionBarIcon, ActionBarButton
+  ActionBar, ActionBarIcon, ActionBarButton,
+  ImagePreview
 } from 'vant'
 
 // 引入iconfont样式
@@ -18,5 +19,6 @@ createApp(App).use(store).use(router).use(Lazyload, {
 }).use(
   Tabbar, TabbarItem, NavBar, List,
   Tab, Tabs, Card, Stepper, SubmitBar,
-  ActionBar, ActionBarIcon, ActionBarButton
+  ActionBar, ActionBarIcon, ActionBarButton,
+  ImagePreview
 ).mount('#app')
