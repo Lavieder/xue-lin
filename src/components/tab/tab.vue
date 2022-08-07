@@ -12,7 +12,7 @@
         >
           <div class="book-item-wrap" ref="list">
             <lazy-component class="lazy-book" v-for="(item, index) in tabContent" :key="index">
-              <book-item :book-item="item" @click="onGoToDetail(item.id)"></book-item>
+              <book-item :book-item="item" @onGoToDetail="onGoToDetail"></book-item>
             </lazy-component>
           </div>
         </van-list>

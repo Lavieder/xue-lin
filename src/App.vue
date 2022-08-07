@@ -6,24 +6,25 @@
         </keep-alive>
       </transition>
     </router-view>
-    <tabbar></tabbar>
+    <tabbar v-if="showTab"></tabbar>
 </template>
 
 <script>
 import { computed, onMounted, ref, watch } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
-import { useStore } from 'vuex'
+// import { useStore } from 'vuex'
 
 export default ({
   components: {
   },
   setup () {
-    const store = useStore()
+    // const store = useStore()
     const showTab = ref(true)
     const route = useRoute()
     const transitionName = ref('')
     const currentPath = computed(() => {
-      return store.getters.currentPath === 'detail'
+      // return store.getters.currentPath === 'detail'
+      return route.path === '/register' || route.path === '/login'
     })
     const innerHeight = ref(window.innerHeight)
     // 监听页面高度和路由，如果页面高度缩小或者在详情页面时，就隐藏底部导航
@@ -37,9 +38,9 @@ export default ({
     watch(() => route.meta.index, (to, from) => {
       if (from === undefined) {
         transitionName.value = ''
-      } else if (to === 5) {
+      } else if (to === 5 || to === 6 || to === 7) {
         transitionName.value = 'slide-left'
-      } else if (from === 5) {
+      } else if (from === 5 || from === 6 || from === 7) {
         transitionName.value = 'slide-right'
       } else {
         transitionName.value = ''

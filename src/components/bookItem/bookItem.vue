@@ -1,5 +1,5 @@
 <template>
-  <div class="book-item">
+  <div class="book-item" @click="onGoToDetail(bookItem.id)">
     <div class="book-img">
       <img v-lazy="bookItem.cover_url" />
     </div>
@@ -21,7 +21,15 @@ export default {
       default: () => {}
     }
   },
-  components: {
+  emit: ['onGoToDetail'],
+  setup (props, context) {
+    const { emit } = context
+    const onGoToDetail = (id) => {
+      emit('onGoToDetail', id)
+    }
+    return {
+      onGoToDetail
+    }
   }
 }
 </script>

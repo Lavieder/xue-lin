@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Toast } from 'vant'
 
 export function request (config) {
   const instance = axios.create({
@@ -13,14 +14,17 @@ export function request (config) {
     // 直接方向
     return config
   }, err => {
-    console.log(err)
+    console.log(err.response.data)
   })
 
   // 响应拦截
-  axios.interceptors.response.use(res => {
+  instance.interceptors.response.use(res => {
     return res
   }, err => {
-    console.log(err)
+    const errors = err.response.data.errors
+    const errorText = errors[Object.keys(errors)[0]]
+    Toast.fail(errorText[0])
+    // return Promise.reject(err)
   })
 
   return instance(config)

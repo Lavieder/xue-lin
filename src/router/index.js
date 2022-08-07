@@ -5,6 +5,9 @@ const Category = () => import('views/Category.vue')
 const Cart = () => import('views/Cart.vue')
 const User = () => import('views/User.vue')
 const BookDetail = () => import('views/BookDetail.vue')
+const Register = () => import('views/Register.vue')
+const Login = () => import('views/Login.vue')
+const UserCenter = () => import('views/UserCenter.vue')
 
 const routes = [
   {
@@ -51,6 +54,33 @@ const routes = [
     meta: {
       index: 5,
       title: '书籍详情'
+    }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register,
+    meta: {
+      index: 6,
+      title: '注册'
+    }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+    meta: {
+      index: 7,
+      title: '登录'
+    }
+  },
+  {
+    path: '/usercenter',
+    name: 'usercenter',
+    component: UserCenter,
+    meta: {
+      index: 8,
+      title: '用户中心'
     }
   }
 ]
