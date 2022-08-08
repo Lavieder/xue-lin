@@ -8,6 +8,8 @@ const BookDetail = () => import('views/BookDetail.vue')
 const Register = () => import('views/Register.vue')
 const Login = () => import('views/Login.vue')
 const UserCenter = () => import('views/UserCenter.vue')
+const Blank = () => import('views/Blank.vue')
+const ForgotPassword = () => import('views/ForgotPassword.vue')
 
 const routes = [
   {
@@ -45,7 +47,18 @@ const routes = [
     meta: {
       index: 4,
       title: '我的'
-    }
+    },
+    children: [
+      {
+        path: '/usercenter',
+        name: 'usercenter',
+        component: UserCenter,
+        meta: {
+          index: 9,
+          title: '用户中心'
+        }
+      }
+    ]
   },
   {
     path: '/detail/:id',
@@ -57,30 +70,38 @@ const routes = [
     }
   },
   {
-    path: '/register',
-    name: 'register',
-    component: Register,
-    meta: {
-      index: 6,
-      title: '注册'
-    }
-  },
-  {
     path: '/login',
     name: 'login',
     component: Login,
     meta: {
-      index: 7,
+      index: 6,
       title: '登录'
     }
   },
   {
-    path: '/usercenter',
-    name: 'usercenter',
-    component: UserCenter,
+    path: '/register',
+    name: 'register',
+    component: Register,
+    meta: {
+      index: 7,
+      title: '注册'
+    }
+  },
+  {
+    path: '/forgot',
+    name: 'forgot',
+    component: ForgotPassword,
     meta: {
       index: 8,
-      title: '用户中心'
+      title: '忘记密码'
+    }
+  },
+  {
+    path: '/blank',
+    name: 'blank',
+    component: Blank,
+    meta: {
+      index: 9
     }
   }
 ]

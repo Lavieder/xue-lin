@@ -1,6 +1,6 @@
 <template>
   <div class="register">
-    <van-nav-bar fixed :border="false" title="快速注册" placeholder>
+    <van-nav-bar fixed :border="false" title="账号快速注册" placeholder>
       <template #left>
           <i class="iconfont icon-left" @click.stop="onClickBack" ></i>
       </template>
@@ -17,8 +17,9 @@
             <van-field v-model="password" type="password" placeholder="请输入密码"/>
             <van-field v-model="password_confirmation" type="password"  placeholder="确认密码"/>
           </van-cell-group>
+          <div class="remark">注册成功后将自动登录</div>
           <div class="sub-botton">
-            <van-button round block native-type="submit">提交</van-button>
+            <van-button round block native-type="submit" :disabled="disabled">注册</van-button>
           </div>
         </van-form>
       </div>
@@ -27,8 +28,11 @@
 </template>
 
 <script>
-import { reactive, ref, toRefs } from '@vue/reactivity'
+import { reactive, toRefs } from '@vue/reactivity'
 import { registerRequest } from 'network/user'
+import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
+import { computed } from '@vue/runtime-core'
 
 export default {
   setup () {
@@ -38,30 +42,31 @@ export default {
       password: '',
       password_confirmation: ''
     })
-    const showNotify = ref(false)
-    const notifyText = ref('')
+    const disabled = computed(() => {
+      return !(userInfo.name || userInfo.email || userInfo.password || userInfo.password_confirmation)
+    })
+    // 返回按钮
     const onClickBack = () => history.back()
     // 注册验证并提交信息
+    const router = useRouter()
     const onSubmit = async () => {
-      await registerRequest(userInfo)
-      if (userInfo.password !== userInfo.password_confirmation) {
-        showNotify.value = true
-        notifyText.value = '两次密码不一致'
-      } else if (userInfo.name === '') {
-        showNotify.value = true
-        notifyText.value = '昵称不能为空'
-      } else if (userInfo.email === '') {
-        showNotify.value = true
-        notifyText.value = '邮箱不能为空'
+      const res = await registerRequest(userInfo)
+      if (res.status === 422) {
+        const errors = res.data.errors
+        const errorText = errors[Object.keys(errors)[0]]
+        Toast.fail(errorText[0])
+        return
       }
-      if (showNotify.value) {
-        showNotify.value = false
+      if (res.status === 201) {
+        Toast.success('注册成功')
+        setTimeout(() => {
+          router.push({ path: '/' })
+        }, 1000)
       }
     }
     return {
       ...toRefs(userInfo),
-      showNotify,
-      notifyText,
+      disabled,
       onSubmit,
       onClickBack
     }
@@ -73,13 +78,13 @@ export default {
 <style lang="scss" scoped>
 .register {
   background: #ffffff;
-  // width: 100%;
-  // position: fixed;
-  // top: 0;
-  // bottom: 0;
-  // left: 0;
-  // right: 0;
-  // z-index:4;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index:4;
   .main {
     display: flex;
     flex-direction: column;
@@ -112,6 +117,11 @@ export default {
             background: $color-theme;
             color: #ffffff;
           }
+        }
+        .remark {
+          padding: 0 16px;
+          font-size: 13px;
+          color: #7a7a7a;
         }
       }
     }

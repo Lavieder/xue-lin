@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 
 export function request (config) {
   const instance = axios.create({
@@ -21,10 +21,10 @@ export function request (config) {
   instance.interceptors.response.use(res => {
     return res
   }, err => {
-    const errors = err.response.data.errors
-    const errorText = errors[Object.keys(errors)[0]]
-    Toast.fail(errorText[0])
-    // return Promise.reject(err)
+    // const errors = err.response.data.errors
+    // const errorText = errors[Object.keys(errors)[0]]
+    // Toast.fail(errorText[0])
+    return err.response
   })
 
   return instance(config)

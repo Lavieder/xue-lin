@@ -65,6 +65,7 @@ export default {
     z-index: 1;
     .van-tabbar-item {
       color: #7a7a7a;
+      transition: all 0.15s;
     }
     .van-tabbar-item--active {
       font-size: 14px;
@@ -72,6 +73,7 @@ export default {
     }
     .iconfont {
       font-size: 28px;
+      transition: all 0.15s;
     }
     .icon-active {
       color: $color-theme;

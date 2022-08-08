@@ -1,6 +1,6 @@
 <template>
   <div class="cart">
-    <van-nav-bar title="购物车" right-text="编辑" fixed ref="navbar" :border="false" placeholder="true" />
+    <van-nav-bar title="购物车" right-text="编辑" fixed ref="navbar" :border="false" :placeholder="true" />
     <div class="cart-wrap">
       <div class="cart-item" v-for="(item, index) in data" :key="index">
         <div class="select-input" >

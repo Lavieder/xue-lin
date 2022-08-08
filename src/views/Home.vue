@@ -100,8 +100,7 @@ export default {
     const router = useRouter()
     const onGoToDetail = (id) => {
       router.push({
-        name: 'detail',
-        params: { id: id }
+        path: `/detail/${id}`
       })
     }
     const onTabScroll = (scroll) => {

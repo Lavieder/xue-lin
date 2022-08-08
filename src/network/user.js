@@ -4,6 +4,13 @@ export function registerRequest (data) {
   return request({
     method: 'POST',
     url: '/api/auth/register',
-    data: data
+    data
+  })
+}
+export function loginRequest (data) {
+  return request({
+    method: 'POST',
+    url: '/api/auth/login',
+    data
   })
 }

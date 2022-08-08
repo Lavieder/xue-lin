@@ -1,6 +1,6 @@
 <template>
-  <div>
-    User
+  <div class="user">
+    <router-link to="/login">登录/注册</router-link>
   </div>
 </template>
 
@@ -13,7 +13,6 @@ export default {
     const store = useStore()
     const route = useRoute()
     const setCurrentPath = () => {
-      // console.log(route.name)
       store.commit('SET_CURRENT_PATH', route.name)
     }
     onActivated(() => {

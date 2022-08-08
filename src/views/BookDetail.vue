@@ -130,7 +130,7 @@ export default {
     const onGoToDetail = (id) => {
       // console.log(id)
       router.push({
-        name: 'detail',
+        name: 'blank',
         params: { id: id }
       })
     }
@@ -168,7 +168,7 @@ export default {
       }
     }
     // 返回按钮
-    const onClickBack = () => history.back()
+    const onClickBack = () => history.go(-1)
     // 分享按钮
     const onClickShare = () => {
       console.log('分享')

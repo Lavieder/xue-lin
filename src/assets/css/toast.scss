@@ -1,0 +1,49 @@
+.van-toast {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: content-box;
+  transition: all .2s;
+  width: 88px;
+  max-width: 70%;
+  min-height: 88px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: pre-wrap;
+  text-align: center;
+  word-break: break-all;
+  background: #141414;
+  border-radius: 14px;
+}
+
+.van-popup--center {
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%,-50%,0);
+}
+
+.van-popup {
+  position: fixed;
+  max-height: 100%;
+  overflow-y: auto;
+  background: #3f3f3f;
+  transition: all 0.3s;
+  -webkit-overflow-scrolling: touch;
+  .van-icon {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  .van-toast__icon {
+    font-size: 40px;
+  }
+  
+  .van-toast__text {
+    margin-top: 8px;
+  }
+}

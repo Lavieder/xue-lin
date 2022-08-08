@@ -1,7 +1,7 @@
 <template>
     <router-view v-slot="{ Component }">
       <transition :name="transitionName">
-        <keep-alive exclude="Detail">
+        <keep-alive :exclude="exclude">
           <component :is="Component" />
         </keep-alive>
       </transition>
@@ -19,6 +19,7 @@ export default ({
   },
   setup () {
     // const store = useStore()
+    const exclude = ref(['Detail', 'Blank'])
     const showTab = ref(true)
     const route = useRoute()
     const transitionName = ref('')
@@ -39,8 +40,12 @@ export default ({
       if (from === undefined) {
         transitionName.value = ''
       } else if (to === 5 || to === 6 || to === 7) {
-        transitionName.value = 'slide-left'
-      } else if (from === 5 || from === 6 || from === 7) {
+        if (to + 1 === from) {
+          transitionName.value = 'slide-right'
+        } else {
+          transitionName.value = 'slide-left'
+        }
+      } else if (from === 5 || from === 6) {
         transitionName.value = 'slide-right'
       } else {
         transitionName.value = ''
@@ -54,6 +59,7 @@ export default ({
       innerHeight.value = window.innerHeight
     })
     return {
+      exclude,
       showTab,
       currentPath,
       transitionName
