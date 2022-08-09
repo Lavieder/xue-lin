@@ -1,5 +1,6 @@
 import axios from 'axios'
-// import { Toast } from 'vant'
+import { Toast } from 'vant'
+import router from '../router/index'
 
 export function request (config) {
   const instance = axios.create({
@@ -10,7 +11,10 @@ export function request (config) {
   // 请求拦截
   instance.interceptors.request.use(config => {
     // 接口认证
-
+    const token = window.localStorage.getItem('xltoken')
+    if (token) {
+      config.headers.Authorization = 'Bearer ' + token
+    }
     // 直接方向
     return config
   }, err => {
@@ -21,9 +25,14 @@ export function request (config) {
   instance.interceptors.response.use(res => {
     return res
   }, err => {
-    // const errors = err.response.data.errors
-    // const errorText = errors[Object.keys(errors)[0]]
-    // Toast.fail(errorText[0])
+    // 如果登录出错，需要授权
+    if (err.response.stutas === 401) {
+      Toast.fail('未授权用户,请重新登录/注册')
+      setTimeout(() => {
+        router.push({ path: '/login' })
+      }, 1000)
+    }
+
     return err.response
   })
 

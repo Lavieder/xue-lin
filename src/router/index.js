@@ -1,13 +1,16 @@
+// import store from '@/store'
+// import { Toast } from 'vant'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const Home = () => import('views/Home.vue')
 const Category = () => import('views/Category.vue')
 const Cart = () => import('views/Cart.vue')
 const User = () => import('views/User.vue')
+const UserCenter = () => import('views/UserCenter.vue')
+const Setting = () => import('views/Setting.vue')
 const BookDetail = () => import('views/BookDetail.vue')
 const Register = () => import('views/Register.vue')
 const Login = () => import('views/Login.vue')
-const UserCenter = () => import('views/UserCenter.vue')
 const Blank = () => import('views/Blank.vue')
 const ForgotPassword = () => import('views/ForgotPassword.vue')
 
@@ -37,7 +40,8 @@ const routes = [
     component: Cart,
     meta: {
       index: 3,
-      title: '购物车'
+      title: '购物车',
+      isAuthRequired: true
     }
   },
   {
@@ -50,12 +54,13 @@ const routes = [
     },
     children: [
       {
-        path: '/usercenter',
+        path: 'usercenter',
         name: 'usercenter',
         component: UserCenter,
         meta: {
           index: 9,
-          title: '用户中心'
+          title: '用户中心',
+          isAuthRequired: true
         }
       }
     ]
@@ -92,8 +97,17 @@ const routes = [
     name: 'forgot',
     component: ForgotPassword,
     meta: {
-      index: 8,
+      index: 7,
       title: '忘记密码'
+    }
+  },
+  {
+    path: '/setting',
+    name: 'setting',
+    component: Setting,
+    meta: {
+      index: 6,
+      title: '个人设置'
     }
   },
   {
@@ -113,8 +127,20 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // console.log(to, from)
-  document.title = to.meta.title
+  // 检查是否登录授权
+  // if (to.meta.isAuthRequired && store.state.isLogin === false) {
+  //   Toast.fail({
+  //     message: '您还没有登录，请先登录',
+  //     duration: 1000
+  //   })
+  //   setTimeout(() => {
+  //     return next('/login')
+  //   }, 1200)
+  // } else {
+  //   next()
+  // }
   next()
+  document.title = to.meta.title
 })
 
 export default router

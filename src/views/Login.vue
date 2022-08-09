@@ -37,6 +37,7 @@ import { loginRequest } from 'network/user'
 import { Toast } from 'vant'
 import { useRouter } from 'vue-router'
 import { computed } from '@vue/runtime-core'
+import store from '@/store'
 
 export default {
   setup () {
@@ -65,13 +66,22 @@ export default {
         const errorText = errors[Object.keys(errors)[0]]
         Toast.fail(errorText[0])
         return
-      } else if (res.status === 401) {
-        Toast.fail('未授权用户')
       }
       if (res.status === 200) {
         // 登录成功将token保存到本地存储里
-        window.localStorage.setItem('token', res.access_token)
-        router.push({ path: '/' })
+        console.log(res.data.access_token)
+        window.localStorage.setItem('xltoken', res.data.access_token)
+        userInfo.email = ''
+        userInfo.password = ''
+        checked.value = false
+        Toast.success({
+          message: '登录成功',
+          duration: 1000
+        })
+        store.commit('SET_IS_LOGIN', true)
+        setTimeout(() => {
+          router.push({ path: '/user' })
+        }, 1300)
       }
     }
     return {

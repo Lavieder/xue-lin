@@ -10,7 +10,7 @@
         <img src="@/assets/images/default-face.png">
       </div>
       <div class="input-wrap">
-        <van-form @submit="onSubmit">
+        <van-form @submit="onRegisterSubmit">
           <van-cell-group inset >
             <van-field v-model="name" placeholder="请输入昵称" clearable/>
             <van-field v-model="email" placeholder="请输入邮箱" clearable />
@@ -29,10 +29,11 @@
 
 <script>
 import { reactive, toRefs } from '@vue/reactivity'
-import { registerRequest } from 'network/user'
+import { registerRequest, loginRequest } from 'network/user'
 import { Toast } from 'vant'
 import { useRouter } from 'vue-router'
 import { computed } from '@vue/runtime-core'
+import store from '@/store'
 
 export default {
   setup () {
@@ -49,7 +50,7 @@ export default {
     const onClickBack = () => history.back()
     // 注册验证并提交信息
     const router = useRouter()
-    const onSubmit = async () => {
+    const onRegisterSubmit = async () => {
       const res = await registerRequest(userInfo)
       if (res.status === 422) {
         const errors = res.data.errors
@@ -60,14 +61,36 @@ export default {
       if (res.status === 201) {
         Toast.success('注册成功')
         setTimeout(() => {
-          router.push({ path: '/' })
+          Toast.success('正在登录中...')
+          loginSubmit()
         }, 1000)
+      }
+    }
+    const loginSubmit = async () => {
+      const loginData = { email: userInfo.email, password: userInfo.password }
+      const res = await loginRequest(loginData)
+      if (res.status === 200) {
+        // 登录成功将token保存到本地存储里
+        console.log(res.data.access_token)
+        window.localStorage.setItem('xltoken', res.data.access_token)
+        userInfo.name = ''
+        userInfo.email = ''
+        userInfo.password = ''
+        userInfo.password_confirmation = ''
+        store.commit('SET_IS_LOGIN', true)
+        Toast.success({
+          message: '登录成功',
+          duration: 1000
+        })
+        setTimeout(() => {
+          router.push({ path: '/' })
+        }, 1300)
       }
     }
     return {
       ...toRefs(userInfo),
       disabled,
-      onSubmit,
+      onRegisterSubmit,
       onClickBack
     }
   }

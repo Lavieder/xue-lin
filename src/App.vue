@@ -12,19 +12,16 @@
 <script>
 import { computed, onMounted, ref, watch } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
-// import { useStore } from 'vuex'
 
 export default ({
   components: {
   },
   setup () {
-    // const store = useStore()
-    const exclude = ref(['Detail', 'Blank'])
+    const exclude = ref(['Detail', 'Blank', 'User'])
     const showTab = ref(true)
     const route = useRoute()
     const transitionName = ref('')
     const currentPath = computed(() => {
-      // return store.getters.currentPath === 'detail'
       return route.path === '/register' || route.path === '/login'
     })
     const innerHeight = ref(window.innerHeight)
@@ -37,9 +34,10 @@ export default ({
       }
     })
     watch(() => route.meta.index, (to, from) => {
+      // console.log(to, from)
       if (from === undefined) {
         transitionName.value = ''
-      } else if (to === 5 || to === 6 || to === 7) {
+      } else if (to === 5 || to === 6 || to === 7 || to === 8) {
         if (to + 1 === from) {
           transitionName.value = 'slide-right'
         } else {
@@ -48,7 +46,7 @@ export default ({
       } else if (from === 5 || from === 6) {
         transitionName.value = 'slide-right'
       } else {
-        transitionName.value = ''
+        transitionName.value = 'fade'
       }
     })
     // resize 监听浏览器窗口大小事件，窗口发生改变时执行
@@ -93,5 +91,16 @@ export default ({
 }
 .slide-right-enter-to {
   transform: translate3d(0, 0, 0);
+}
+
+.fade-enter-active{
+  transition: opacity 0.25s ease;
+}
+.fade-leave-from{
+  display: none;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

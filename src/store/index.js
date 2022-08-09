@@ -1,19 +1,12 @@
 import { createStore } from 'vuex'
+import state from './state'
+import getters from './getters'
+import mutations from './mutations'
 
 export default createStore({
-  state: {
-    currentPath: ''
-  },
-  getters: {
-    currentPath: (state) => {
-      return state.currentPath
-    }
-  },
-  mutations: {
-    SET_CURRENT_PATH: (state, value) => {
-      state.currentPath = value
-    }
-  },
+  state,
+  getters,
+  mutations,
   actions: {
   },
   modules: {

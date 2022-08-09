@@ -128,6 +128,7 @@ export default {
 
 <style lang="scss" scoped>
   .cart::v-deep {
+    background: #ffffff;
     .cart-wrap {
       padding: 0 15px;
       .cart-item:last-of-type {
