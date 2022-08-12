@@ -172,8 +172,8 @@ export default {
     }
     // 返回按钮
     const onClickBack = () => {
-      history.go(-1)
       store.commit('SET_BACK_STATU', true)
+      history.go(-1)
     }
     // 分享按钮
     const onClickShare = () => {

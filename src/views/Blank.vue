@@ -15,7 +15,7 @@ export default ({
       return store.state.backStatu
     })
     const back = () => {
-      if (backStatu) {
+      if (backStatu.value) {
         history.go(-1)
       } else {
         routePush()

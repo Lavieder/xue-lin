@@ -101,7 +101,6 @@ export default {
     const checkbox = ref(null)
     const onAllChecked = async () => {
       onAllSelect(checkbox.value)
-      console.log(checkedList)
       cartData.checked = [...checkedList]
       await checkedCartGoods({ cart_ids: checkedList })
     }
