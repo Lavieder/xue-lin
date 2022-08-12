@@ -4,16 +4,26 @@
   </div>
 </template>
 <script>
-import { onMounted, ref, watch } from '@vue/runtime-core'
+import store from '@/store'
+import { computed, onActivated, onBeforeMount, ref, watch } from '@vue/runtime-core'
 import { useRoute, useRouter } from 'vue-router'
 
 export default ({
   name: 'Blank',
   setup () {
+    const backStatu = computed(() => {
+      return store.state.backStatu
+    })
+    const back = () => {
+      if (backStatu) {
+        history.go(-1)
+      } else {
+        routePush()
+      }
+    }
     const router = useRouter()
     const route = useRoute()
     const routePush = () => {
-      console.log(route.params.id)
       router.push({
         name: 'detail',
         params: route.params.id
@@ -22,14 +32,19 @@ export default ({
     // 监听loading
     const loading = ref(true)
     watch(() => route.params.id, (n, o) => {
+      if (backStatu) {
+        return false
+      }
       if (n) {
         loading.value = false
       } else {
         loading.value = true
       }
     })
-    onMounted(() => {
-      routePush()
+    onActivated(() => {
+    })
+    onBeforeMount(() => {
+      back()
     })
     return {
       loading,

@@ -68,18 +68,13 @@
 
 <script>
 import { onBeforeMount, onActivated, computed } from '@vue/runtime-core'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 export default {
   name: 'User',
   setup () {
     const store = useStore()
-    const route = useRoute()
-    const setCurrentPath = () => {
-      store.commit('SET_CURRENT_PATH', route.name)
-    }
     const isLogin = computed(() => {
-      console.log('U: ', store.state.isLogin)
       return store.state.isLogin
     })
     const router = useRouter()
@@ -89,10 +84,8 @@ export default {
       })
     }
     onActivated(() => {
-      setCurrentPath()
     })
     onBeforeMount(() => {
-      setCurrentPath()
     })
     return {
       isLogin,

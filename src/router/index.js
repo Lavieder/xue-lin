@@ -13,6 +13,7 @@ const Register = () => import('views/Register.vue')
 const Login = () => import('views/Login.vue')
 const Blank = () => import('views/Blank.vue')
 const ForgotPassword = () => import('views/ForgotPassword.vue')
+const Map = () => import('views/map.vue')
 
 const routes = [
   {
@@ -114,6 +115,14 @@ const routes = [
     path: '/blank',
     name: 'blank',
     component: Blank,
+    meta: {
+      index: 9
+    }
+  },
+  {
+    path: '/map',
+    name: 'map',
+    component: Map,
     meta: {
       index: 9
     }

@@ -1,6 +1,6 @@
 <template>
   <van-action-bar >
-    <van-action-bar-icon text="购物车" @click="onGoToChildCart">
+    <van-action-bar-icon text="购物车" @click="onGoToChildCart" :badge="cartTotal">
       <template #icon>
         <i class="iconfont icon-shinshopgouwuche"></i>
       </template>
@@ -13,6 +13,12 @@
 
 <script>
 export default {
+  props: {
+    cartTotal: {
+      type: Number,
+      default: 0
+    }
+  },
   setup (props, context) {
     const { emit } = context
     // 从详情页去购物车
@@ -57,17 +63,21 @@ export default {
     .iconfont {
       font-size: 24px;
     }
+    .van-badge {
+      background: $color-dot;
+      top: 5px;
+    }
   }
   .van-action-bar-icon:active {
     background: none;
   }
   .van-action-bar-button--first {
-    border-radius: 10px 0 0 10px;
+    border-radius: 7px 0 0 7px;
     margin-left: 10px;
     background: $color-sub-theme;
   }
   .van-action-bar-button--last {
-    border-radius: 0 10px 10px 0;
+    border-radius: 0 7px 7px 0;
     // margin-right: 10px;
     background: $color-theme;
   }

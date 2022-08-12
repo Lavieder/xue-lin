@@ -2,16 +2,17 @@
     <router-view v-slot="{ Component }">
       <transition :name="transitionName">
         <keep-alive :exclude="exclude">
-          <component :is="Component" />
+          <component :is="Component" :showTab="showTab" />
         </keep-alive>
       </transition>
     </router-view>
-    <tabbar v-if="showTab"></tabbar>
+    <tabbar v-if="showTab" :cartTotal="cartTotal"></tabbar>
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from '@vue/runtime-core'
+import { computed, onBeforeMount, onMounted, ref, watch } from '@vue/runtime-core'
 import { useRoute } from 'vue-router'
+import store from './store'
 
 export default ({
   components: {
@@ -24,15 +25,21 @@ export default ({
     const currentPath = computed(() => {
       return route.path === '/register' || route.path === '/login'
     })
+    // 获取购物车徽标数量
+    const cartTotal = computed(() => {
+      return store.state.cartTotal
+    })
     const innerHeight = ref(window.innerHeight)
     // 监听页面高度和路由，如果页面高度缩小或者在详情页面时，就隐藏底部导航
     watch([innerHeight, currentPath], ([newHeight, newPath], [oldHeight, oldPath]) => {
+      console.log(newHeight, oldHeight)
       if (newHeight < oldHeight || newPath) {
         showTab.value = false // 隐藏tabbar
       } else {
         showTab.value = true // 显示tabbar
       }
     })
+    // 监听路由，切换过渡动画
     watch(() => route.meta.index, (to, from) => {
       // console.log(to, from)
       if (from === undefined) {
@@ -53,6 +60,9 @@ export default ({
     window.addEventListener('resize', () => {
       innerHeight.value = window.innerHeight
     })
+    onBeforeMount(() => {
+      // store.dispatch('getCartDataTotal')
+    })
     onMounted(() => {
       innerHeight.value = window.innerHeight
     })
@@ -60,7 +70,8 @@ export default ({
       exclude,
       showTab,
       currentPath,
-      transitionName
+      transitionName,
+      cartTotal
     }
   }
 })

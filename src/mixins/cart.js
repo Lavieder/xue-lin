@@ -1,39 +1,43 @@
 import { ref } from 'vue'
 
 const allChecked = ref(false)
-const isChecked = ref(false)
 // 选中列表
-const checkedList = []
+let checkedList = []
 let originGoodsList = []
 // 接收传递来购物车所有商品的函数
 const onOriginGoods = (cartArr, checkedArr) => {
   originGoodsList = cartArr
-  // checkedList = checkedArr
-  // console.log(originGoodsList, checkedList)
+  checkedList = checkedArr
+  if (checkedList.length === originGoodsList.length) {
+    allChecked.value = true
+  } else {
+    allChecked.value = false
+  }
 }
-// 页面加载返回选中的数据
-// const getCheckedGoods = () => {
-//   checkedList.forEach(() => {
-//     e
-//   })
-// }
 // 全选
-const onAllSelect = () => {
+const onAllSelect = (checkboxRefs) => {
   allChecked.value = !allChecked.value
-  isChecked.value = allChecked.value
+  checkboxRefs.forEach(checkboxEle => {
+    if (allChecked.value) {
+      checkboxEle.checked = true
+      // 深拷贝
+      checkedList = [...originGoodsList]
+    } else {
+      checkedList = []
+      checkboxEle.checked = false
+    }
+  })
 }
 // 单选
 const onOnlySelect = (e, id) => {
-  // console.log(e.target.checked)
-  if (e.target.checked) {
-    checkedList.push(id)
+  const index = checkedList.indexOf(id)
+  if (index >= 0) {
+    checkedList.splice(index, 1)
   } else {
-    const index = checkedList.indexOf(id)
-    if (index >= 0) {
-      checkedList.splice(index, 1)
+    if (e.target.checked) {
+      checkedList.push(id)
     }
   }
-  // console.log(checkedList)
   if (checkedList.length === originGoodsList.length) {
     allChecked.value = true
   } else {
@@ -42,8 +46,8 @@ const onOnlySelect = (e, id) => {
 }
 export {
   allChecked,
-  isChecked,
   onOriginGoods,
   onAllSelect,
-  onOnlySelect
+  onOnlySelect,
+  checkedList
 }

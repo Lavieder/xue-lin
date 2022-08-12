@@ -6,7 +6,8 @@ import {
   Tabbar, TabbarItem, NavBar, List, Loading,
   Lazyload, Tab, Tabs, Card, Stepper, SubmitBar,
   ActionBar, ActionBarIcon, ActionBarButton,
-  Form, Field, CellGroup
+  Form, Field, CellGroup, Badge, SwipeCell,
+  Tag
 } from 'vant'
 
 // 引入iconfont样式
@@ -21,5 +22,6 @@ createApp(App).use(store).use(router).use(Lazyload, {
   Tabbar, TabbarItem, NavBar, List, Loading,
   Tab, Tabs, Card, Stepper, SubmitBar,
   ActionBar, ActionBarIcon, ActionBarButton,
-  Form, Field, CellGroup
+  Form, Field, CellGroup, Badge, SwipeCell,
+  Tag
 ).mount('#app')

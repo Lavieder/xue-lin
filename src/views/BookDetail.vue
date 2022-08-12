@@ -23,8 +23,11 @@
             <div class="title-price">
               <p class="title">{{goods.title}}</p>
               <div class="price">
-                ￥<span>{{goods.price}}</span>
-                <span class="stock">库存{{goods.stock}}</span>
+                ￥
+                <span class="price-stock">
+                  <span>{{goods.price}}</span>
+                  <span class="stock">库存{{goods.stock}} </span>
+                </span>
               </div>
             </div>
             <div class="desc">
@@ -32,6 +35,7 @@
                 <div class="cell" v-for="(item,index) in types" :key="index">
                   <div class="cell-type">{{item.name}}</div>
                   <van-cell :title="item.value" />
+                  <i class="iconfont icon-xiangyou"></i>
                 </div>
               </van-list>
             </div>
@@ -72,27 +76,26 @@
         @onCollectBook="onCollectBook"
         @onAddCart="onAddCart"
         @onBuyNow="onBuyNow"
+        :cartTotal="cartTotal"
       ></action-bar>
     </div>
   </div>
 </template>
 
 <script>
-import { onBeforeMount, onMounted, onActivated, ref, reactive, toRefs, watch } from '@vue/runtime-core'
+import { onMounted, onActivated, ref, reactive, toRefs, watch, computed } from '@vue/runtime-core'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import ActionBar from '@/components/actionBar/actionBar.vue'
 import { getDetailData } from 'network/detail'
+import { addCartGoods } from 'network/cart'
+import { Toast } from 'vant'
+import store from '@/store'
 
 export default {
   components: { ActionBar },
   name: 'Detail',
   setup () {
-    const store = useStore()
     const route = useRoute()
-    const setCurrentPath = () => {
-      store.commit('SET_CURRENT_PATH', route.name)
-    }
     const bookId = ref(0)
     const book = reactive({
       goods: {},
@@ -168,7 +171,10 @@ export default {
       }
     }
     // 返回按钮
-    const onClickBack = () => history.go(-1)
+    const onClickBack = () => {
+      history.go(-1)
+      store.commit('SET_BACK_STATU', true)
+    }
     // 分享按钮
     const onClickShare = () => {
       console.log('分享')
@@ -185,24 +191,40 @@ export default {
     const onCollectBook = () => {
       console.log('收藏')
     }
+    // 获取购物车徽标数量
+    const cartTotal = computed(() => {
+      return store.state.cartTotal
+    })
     // 加入购物车
-    const onAddCart = () => {
-      console.log('加入购物车')
+    let addCartReady = false
+    const onAddCart = async () => {
+      if (addCartReady) {
+        return
+      }
+      addCartReady = true
+      const data = { goods_id: book.goods.id, num: 1 }
+      const res = await addCartGoods(data)
+      if (res.status === 201 || res.status === 204) {
+        Toast.success('加入购物车成功')
+        store.commit('SET_CART_TOTAL', cartTotal.value + 1)
+        setTimeout(() => {
+          addCartReady = false
+        }, 3000)
+      } else {
+        console.log('422 addCartGoods参数异常')
+      }
     }
     // 立即购买
     const onBuyNow = () => {
       console.log('立即购买')
     }
-    onBeforeMount(() => {
-      setCurrentPath()
-    })
     // 只有activated 生命周期在组件使用keep-alive缓存后也能执行相应操作
     onActivated(() => {
-      setCurrentPath()
     })
     onMounted(() => {
       // getNavHeight()
       getBooKDetail()
+      store.commit('SET_BACK_STATU', false)
     })
     return {
       bookId,
@@ -220,7 +242,8 @@ export default {
       onGoToChildCart,
       onCollectBook,
       onAddCart,
-      onBuyNow
+      onBuyNow,
+      cartTotal
 
     }
   }
@@ -304,18 +327,25 @@ export default {
             font-size: $font-size-medium;
             color: #caaa6a;
             font-weight: 600;
+            display: flex;
+            align-items: baseline;
             span {
               font-size: 30px;
               font-weight: 400;
             }
+            .price-stock {
+              display: flex;
+              align-items: flex-start;
+            }
             .stock {
               display: inline-block;
               font-size: $font-size-small-s;
-              color: pink;
-              border: 1px solid red;
-              padding: 2px 7px;
-              border-radius: 8px;
+              color: $color-dot;
+              border: 1px solid $color-dot;
+              padding: 2px 6px;
+              border-radius: 5px;
               margin-left: 15px;
+              zoom: 0.77;
             }
           }
         }
@@ -335,6 +365,13 @@ export default {
               padding: 0;
               color: #000000;
               font-weight: 600;
+            }
+            .van-cell:after {
+              border: 0;
+            }
+            .iconfont {
+              font-size: 12px;
+              color: #000000;
             }
           }
           .cell:last-of-type {

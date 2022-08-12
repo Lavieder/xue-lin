@@ -20,13 +20,12 @@
 
 <script>
 import { computed, onActivated, onBeforeMount, onMounted, reactive, ref } from 'vue'
-import { useStore } from 'vuex'
 import { getHomeAllData, getTabData } from 'network/home'
 import Search from 'components/search/search'
 import Swipe from 'components/home/swipe'
 import GuessYouLike from 'components/home/guessYouLike'
 import Tab from 'components/tab/tab'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'Home',
@@ -34,12 +33,6 @@ export default {
     Search, Swipe, GuessYouLike, Tab
   },
   setup () {
-    // 监听路径
-    const store = useStore()
-    const route = useRoute()
-    const setCurrentPath = () => {
-      store.commit('SET_CURRENT_PATH', route.name)
-    }
     const bannerData = ref([])
     const recommendData = ref([])
     const tabContentData = reactive({
@@ -107,11 +100,9 @@ export default {
       // console.log(scroll)
     }
     onBeforeMount(() => {
-      setCurrentPath()
     })
     // 只有activated 生命周期在组件使用keep-alive缓存后也能执行相应操作
     onActivated(() => {
-      setCurrentPath()
     })
     onMounted(async () => {
       const homeResult = await getHomeAllData()

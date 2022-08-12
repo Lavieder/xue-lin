@@ -4,6 +4,7 @@
       :key="tab.path"
       :to="tab.path"
       :name="tab.name"
+      :badge="tab.path === '/cart' ? cartTotal === 0 ? '' : cartTotal : ''"
     >
       <span >{{tab.name}}</span>
       <template #icon='props'>
@@ -20,7 +21,13 @@ import { useRoute } from 'vue-router'
 export default {
   components: {
   },
-  setup () {
+  props: {
+    cartTotal: {
+      type: Number,
+      default: () => 0
+    }
+  },
+  setup (props) {
     const route = useRoute()
     const tabs = reactive([
       {
@@ -59,25 +66,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .van-tabbar {
+  .van-tabbar::v-deep {
     height: 55px;
     box-shadow: -1px 0 10px #ececec;
     z-index: 1;
     .van-tabbar-item {
       color: #7a7a7a;
       transition: all 0.15s;
+      .van-badge__wrapper  {
+        .van-badge {
+          background: $color-dot;
+        }
+      }
     }
     .van-tabbar-item--active {
-      font-size: 14px;
-      color: black;
+      color: $color-theme;
     }
     .iconfont {
-      font-size: 28px;
+      font-size: 27px;
       transition: all 0.15s;
     }
     .icon-active {
       color: $color-theme;
-      font-size: 30px;
     }
   }
 </style>

@@ -1,9 +1,14 @@
+import state from './state'
+
 const getters = {
-  currentPath: (state) => {
-    return state.currentPath
-  },
   isLogin: (state) => {
     return state.isLogin
+  },
+  cartTotal: () => {
+    return state.cartTotal
+  },
+  backStatu: () => {
+    return state.backStatu
   }
 }
 export default getters

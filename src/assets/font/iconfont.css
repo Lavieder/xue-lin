@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3543714 */
-  src: url('//at.alicdn.com/t/c/font_3543714_p8mremihlv.woff2?t=1660041372026') format('woff2'),
-       url('//at.alicdn.com/t/c/font_3543714_p8mremihlv.woff?t=1660041372026') format('woff'),
-       url('//at.alicdn.com/t/c/font_3543714_p8mremihlv.ttf?t=1660041372026') format('truetype'),
-       url('//at.alicdn.com/t/c/font_3543714_p8mremihlv.svg?t=1660041372026#iconfont') format('svg');
+  src: url('iconfont.woff2?t=1660067168470') format('woff2'),
+       url('iconfont.woff?t=1660067168470') format('woff'),
+       url('iconfont.ttf?t=1660067168470') format('truetype'),
+       url('iconfont.svg?t=1660067168470#iconfont') format('svg');
 }
 
 .iconfont {
@@ -117,3 +117,4 @@
 .icon-shinshopshouhuodizhi:before {
   content: "\e627";
 }
+
