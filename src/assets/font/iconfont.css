@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3543714 */
-  src: url('iconfont.woff2?t=1660067168470') format('woff2'),
-       url('iconfont.woff?t=1660067168470') format('woff'),
-       url('iconfont.ttf?t=1660067168470') format('truetype'),
-       url('iconfont.svg?t=1660067168470#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.woff2?t=1660445789166') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.woff?t=1660445789166') format('woff'),
+       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.ttf?t=1660445789166') format('truetype'),
+       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.svg?t=1660445789166#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-weidenglu:before {
+  content: "\e612";
 }
 
 .icon-dingdan:before {
@@ -117,4 +121,3 @@
 .icon-shinshopshouhuodizhi:before {
   content: "\e627";
 }
-

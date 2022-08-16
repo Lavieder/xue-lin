@@ -32,6 +32,12 @@ export function request (config) {
         router.push({ path: '/login' })
       }, 1000)
     }
+    if (err.response.status === 422) {
+      const errors = err.response.data.errors
+      const errorText = errors[Object.keys(errors)[0]]
+      Toast.fail(errorText[0])
+      return
+    }
 
     return err.response
   })

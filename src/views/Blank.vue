@@ -14,6 +14,8 @@ export default ({
     const backStatu = computed(() => {
       return store.state.backStatu
     })
+    const router = useRouter()
+    const route = useRoute()
     const back = () => {
       if (backStatu.value) {
         history.go(-1)
@@ -21,8 +23,6 @@ export default ({
         routePush()
       }
     }
-    const router = useRouter()
-    const route = useRoute()
     const routePush = () => {
       router.push({
         name: 'detail',

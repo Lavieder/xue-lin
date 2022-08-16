@@ -1,62 +1,85 @@
 <template>
   <div class="cart">
-    <van-nav-bar title="购物车" right-text="编辑" fixed ref="navbar" :border="false" />
-      <div class="cart-wrap">
-        <div class="cart-item" v-for="(item, index) in list" :key="index">
-          <div class="select-input" >
-            <input type="checkbox" ref="checkbox"
-              :id="'ck'+index"
-              :checked="item.is_checked"
-              @click.stop="onOnlyChecked($event,item.id)"
-            />
-            <label :for="'ck'+index"></label>
-          </div>
-          <van-swipe-cell>
-            <van-card
-              :price="item.goods.price.toFixed(2)"
-              :title="item.goods.title"
-              :desc="item.goods.description"
-              :thumb="item.goods.cover_url"
-              @click="onGoToDetail(item.goods_id)"
-            >
-              <template #bottom>
-                <van-stepper v-model="item.num"
-                  integer
-                  min="1"
-                  :max="item.goods.stock"
-                  :name="item.id"
-                  @change="onChangeNum"
-                  @plus="onPlusNum"
-                  @minus="onMinusNum"
+    <van-nav-bar title="购物车" fixed ref="navbar" :border="false" placeholder />
+    <template v-if="isLogin">
+      <van-loading color="#000000" v-if="loading"/>
+      <template v-else>
+        <template v-if="list.length!==0">
+          <div class="cart-wrap" >
+            <div class="cart-item" v-for="(item, index) in list" :key="index">
+              <div class="select-input" >
+                <input type="checkbox" ref="checkbox"
+                  :id="'ck'+index"
+                  :checked="item.is_checked"
+                  @click.stop="onOnlyChecked($event,item.id)"
                 />
-              </template>
-            </van-card>
-             <template #right>
-              <van-button square text="删除" type="danger" class="delete-button" @click="deleteGoods(item.id)" />
-            </template>
-          </van-swipe-cell>
+                <label :for="'ck'+index"></label>
+              </div>
+              <van-swipe-cell ref="swipeCell">
+                <van-card
+                  :price="item.goods.price.toFixed(2)"
+                  :title="item.goods.title"
+                  :desc="item.goods.description"
+                  :thumb="item.goods.cover_url"
+                  @click="onGoToDetail(item.goods_id)"
+                >
+                  <template #bottom>
+                    <van-stepper v-model="item.num"
+                      integer
+                      min="1"
+                      :max="item.goods.stock"
+                      :name="item.id"
+                      @click.stop="onStepperClick"
+                      @blur="onNumBlur(item.id)"
+                      @change="onChangeNum"
+                      @plus="onPlusNum"
+                      @minus="onMinusNum"
+                      @overlimit="onOverLimit"
+                      :long-press="false"
+                    />
+                  </template>
+                </van-card>
+                  <template #right>
+                    <van-button square text="删除" type="danger" class="delete-button" @click="deleteGoods(item.id)" />
+                  </template>
+              </van-swipe-cell>
+            </div>
+          </div>
+          <van-submit-bar :disabled="checked.length===0" :price="totalPrice" :button-text="`结算(${checkedNum})`" @submit="onSubmit" v-if="showTab && list.length!==0">
+            <div class="allChecked-wrap" @click.prevent="onAllChecked" >
+              <div class="select-input" >
+                <input type="checkbox" v-model="allChecked" id="allChecked" />
+                <label for="allChecked"></label>
+              </div>
+              <label for="allChecked">全选</label>
+            </div>
+          </van-submit-bar>
+        </template>
+        <div class="nullCart" v-if="list.length===0">
+          <i class="iconfont icon-shinshopgouwuche"></i>
+          <div>购物车还是空的</div>
+          <div class="looking" @click="onLooking">随便看看</div>
         </div>
+      </template>
+    </template>
+    <template v-else>
+      <div class="nullCart">
+        <i class="iconfont icon-weidenglu"></i>
+        <div>暂未获取到您的信息</div>
+        <div class="looking" @click="toLogin">登录</div>
       </div>
-    <van-submit-bar :price="totalPrice" :button-text="`结算(${checkedNum})`" @submit="onSubmit($event)" v-if="showTab">
-      <div class="allChecked-wrap" @click.prevent="onAllChecked" >
-        <div class="select-input" >
-          <input type="checkbox" v-model="allChecked" id="allChecked" />
-          <label for="allChecked"></label>
-        </div>
-        <label for="allChecked">全选</label>
-      </div>
-    </van-submit-bar>
+    </template>
   </div>
 </template>
 
 <script>
 import { reactive, ref, toRefs } from '@vue/reactivity'
-import { computed, getCurrentInstance, onActivated, onMounted } from '@vue/runtime-core'
+import { computed, onActivated, onMounted, watch } from '@vue/runtime-core'
 import { allChecked, checkedList, onOriginGoods, onAllSelect, onOnlySelect } from 'mixins/cart'
-import { offsetTop, getNode, getNavHeight } from 'mixins/navHeight'
 import { getCartGoods, modifyCartNum, checkedCartGoods, deleteCartGoods } from 'network/cart'
 import store from '@/store'
 import router from '@/router'
+import { Toast } from 'vant'
 
 export default {
   props: {
@@ -65,23 +88,45 @@ export default {
       default: false
     }
   },
-  components: {
-  },
   setup () {
-    const navNode = getCurrentInstance()
-    getNode(navNode)
+    // 检查是否登录
+    const isLogin = computed(() => {
+      return store.state.isLogin
+    })
+    const cartTotal = computed(() => {
+      return store.state.cartTotal
+    })
     const cartData = reactive({
       list: [],
       checked: []
     })
+    // 监听loading
+    const loading = ref(true)
+    watch(() => cartData.list.length, (n, o) => {
+      if (n === o) {
+        loading.value = false
+      } else {
+        loading.value = true
+        if (n || n === 0) {
+          loading.value = false
+        }
+      }
+    })
     // 获取购物车商品列表
     const getCartData = async () => {
-      const res = await getCartGoods()
-      if (res.status === 200) {
-        cartData.list = res.data.data
-        cartData.checked = initCheckedList(cartData.list)
-        getTotal()
-        onOriginGoods(cartIDList(cartData.list), initCheckedList(cartData.list))
+      if (!isLogin.value) {
+        return false
+      } else {
+        const res = await getCartGoods()
+        if (res.status === 200) {
+          if (res.data.data.length === 0) {
+            loading.value = false
+          }
+          cartData.list = res.data.data
+          cartData.checked = initCheckedList(cartData.list)
+          getTotal()
+          onOriginGoods(cartIDList(cartData.list), initCheckedList(cartData.list))
+        }
       }
     }
     // 处理cartData数据，把所有购物车商品id和选中id分别生成一个数组，以便选中判断
@@ -111,12 +156,25 @@ export default {
       await checkedCartGoods({ cart_ids: checkedList })
     }
     // 删除商品
+    const swipeCell = ref(null)
     const deleteGoods = async (id) => {
+      cartData.list.map((item, index) => {
+        if (item.id === id) {
+          store.commit('SET_CART_TOTAL', cartTotal.value - item.num)
+          cartData.list.splice(index, 1)
+        }
+        return cartData.list
+      })
+      swipeCell.value.forEach(item => {
+        item.close()
+      })
       const res = await deleteCartGoods(id)
-      if (res.status === 204) {
-        getCartData()
+      getCartData()
+      if (res.status !== 204) {
+        console.log('删除商品异常')
       }
     }
+    // 删除选中商品 计算选中状态
     // 购物车 根据选中数量计算价格
     const checkedNum = ref(0)
     const totalPrice = computed(() => {
@@ -131,34 +189,66 @@ export default {
       return sumPrice
     })
     // 获取商品总数量
-    let sum = 0
     const getTotal = () => {
-      sum = 0
+      let sum = 0
       cartData.list.forEach(item => {
         sum += item.num
       })
       store.commit('SET_CART_TOTAL', sum)
     }
+    // 输入数量框焦点状态
+    let blur = true
+    const onNumBlur = (id) => {
+      blur = true
+      let sum = 0
+      cartData.list.forEach(goods => {
+        if (goods.id === id) {
+          onChangeNum(goods.num, { name: id })
+        }
+        sum += goods.num
+      })
+      store.commit('SET_CART_TOTAL', sum)
+    }
+    const onStepperClick = () => {}
     // 更改商品数量
     const onChangeNum = async (num, item) => {
-      const res = await modifyCartNum(item.name, { num: num })
-      if (res.status !== 204) {
-        console.log('onChangeNum出错')
+      event.stopPropagation()
+      if (num === '') num = 1
+      if (blur) {
+        const res = await modifyCartNum(item.name, { num: num })
+        if (res.status !== 204) {
+          console.log('onChangeNum出错')
+        }
       }
     }
     // 点击增加按钮 增加数量
     const onPlusNum = () => {
-      sum = sum + 1
+      event.stopPropagation()
+      let sum = 0
+      sum = cartTotal.value + 1
       store.commit('SET_CART_TOTAL', sum)
     }
     // 点击减少按钮 减少数量
     const onMinusNum = () => {
-      sum = sum - 1
+      event.stopPropagation()
+      let sum = 0
+      sum = cartTotal.value - 1
       store.commit('SET_CART_TOTAL', sum)
     }
+    // 点击不可以的按钮取消冒泡
+    const onOverLimit = () => {
+      event.stopPropagation()
+    }
     // 提交订单
-    const onSubmit = (e) => {
-      console.log(e)
+    const onSubmit = () => {
+      if (cartData.checked.length === 0) {
+        Toast.fail('未选中商品！')
+      } else {
+        console.log('提交订单')
+        router.push({
+          path: '/createorder'
+        })
+      }
     }
     // 去详情页
     const onGoToDetail = (id) => {
@@ -167,29 +257,47 @@ export default {
         params: { id: id }
       })
     }
+    // 购物车为空时路径跳转
+    const onLooking = () => {
+      router.push({
+        path: '/'
+      })
+    }
+    // 未登录
+    const toLogin = () => {
+      router.push({
+        path: '/login'
+      })
+    }
     onActivated(() => {
       getCartData()
     })
     onMounted(() => {
-      getNavHeight()
     })
     return {
       ...toRefs(cartData),
-      offsetTop,
+      isLogin,
       checkbox,
       allChecked,
       onOnlySelect,
       onAllChecked,
       onOnlyChecked,
+      getTotal,
       onSubmit,
       onChangeNum,
-      getTotal,
+      onNumBlur,
+      onStepperClick,
       onPlusNum,
       onMinusNum,
+      onOverLimit,
       deleteGoods,
       totalPrice,
       checkedNum,
-      onGoToDetail
+      onGoToDetail,
+      onLooking,
+      toLogin,
+      loading,
+      swipeCell
     }
   }
 }
@@ -221,6 +329,12 @@ export default {
       border-bottom: 1px solid #e7e7e7;
       .van-swipe-cell {
         flex: 1;
+      }
+      .swipeCell {
+        .van-swipe-cell__wrapper {
+          transform: translate3d(0,0,0) !important;
+          transition: 0s !important;
+        }
       }
       .van-card {
         flex: 1;
@@ -329,9 +443,33 @@ export default {
         background: $color-theme;
         border-radius: 7px;
       }
+      .van-button:before {
+        border: 0;
+      }
     }
     .allChecked-wrap {
       display: flex;
+    }
+  }
+  .nullCart {
+    width: 100%;
+    height: 566px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: #959595;
+    .iconfont {
+      font-size: 80px;
+      margin-bottom: 10px;
+      margin-top: 120px;
+    }
+    .looking {
+      padding: 7px 17px;
+      border: 1px solid #959595;
+      border-radius: 25px;
+      margin-top: 30px;
+      font-size: 16px;
     }
   }
   .select-input {
@@ -372,5 +510,17 @@ export default {
       left: -1.5px;
     }
   }
+}
+.van-loading {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
 }
 </style>

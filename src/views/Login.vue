@@ -7,7 +7,7 @@
     </van-nav-bar>
     <div class="main">
       <div class="default-face">
-        <img src="@/assets/images/default-face.png">
+        <img src="@/assets/images/default-avatar.png">
       </div>
       <div class="input-wrap">
         <van-form @submit="onSubmit">
@@ -33,9 +33,9 @@
 
 <script>
 import { reactive, ref, toRefs } from '@vue/reactivity'
-import { loginRequest } from 'network/user'
+import { loginRequest, getUserInfo } from 'network/user'
 import { Toast } from 'vant'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { computed } from '@vue/runtime-core'
 import store from '@/store'
 
@@ -55,12 +55,15 @@ export default {
       return !((userInfo.email || userInfo.password) && checked.value)
     })
     // 返回按钮
-    const onClickBack = () => history.back()
+    const onClickBack = () => {
+      store.commit('SET_BACK_STATU', true)
+      history.go(-1)
+    }
     // 登录验证并提交信息
-    const router = useRouter()
+    // const router = useRouter()
     const onSubmit = async () => {
       const res = await loginRequest(userInfo)
-      console.log(res)
+      // console.log(res)
       if (res.status === 422) {
         const errors = res.data.errors
         const errorText = errors[Object.keys(errors)[0]]
@@ -69,8 +72,14 @@ export default {
       }
       if (res.status === 200) {
         // 登录成功将token保存到本地存储里
-        console.log(res.data.access_token)
+        // console.log(res.data.access_token)
+        store.commit('SET_IS_LOGIN', true)
         window.localStorage.setItem('xltoken', res.data.access_token)
+        const resInfo = await getUserInfo()
+        if (resInfo.status === 200) {
+          window.localStorage.setItem('xluser', JSON.stringify(resInfo.data))
+          store.commit('SET_USER_INFO', resInfo.data)
+        }
         userInfo.email = ''
         userInfo.password = ''
         checked.value = false
@@ -78,9 +87,9 @@ export default {
           message: '登录成功',
           duration: 1000
         })
-        store.commit('SET_IS_LOGIN', true)
         setTimeout(() => {
-          router.push({ path: '/user' })
+          history.back()
+          // router.push({ path: '/user' })
         }, 1300)
       }
     }
@@ -106,6 +115,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
+  z-index:2;
   .main {
     display: flex;
     flex-direction: column;

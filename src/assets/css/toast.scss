@@ -24,12 +24,14 @@
   transform: translate3d(-50%,-50%,0);
 }
 
-.van-popup {
+.van-popup.van-toast {
   position: fixed;
   max-height: 100%;
+  width: auto;
+  min-width: 115px;
   overflow-y: auto;
-  background: rgb(63, 63, 63, 0.9);
-  transition: all 0.2s;
+  padding: 12px;
+  background: rgb(63, 63, 63, 0.9)!important;
   -webkit-overflow-scrolling: touch;
   .van-icon {
     position: relative;
@@ -44,5 +46,16 @@
   
   .van-toast__text {
     margin-top: 8px;
+  }
+}
+
+.van-popup.van-popover {
+  .van-popover__arrow {
+    right: 3px!important;
+    color: rgb(63, 63, 63, 0.9)!important;
+  }
+  .van-popover__content {
+    background: rgb(63, 63, 63, 0.9)!important;
+    color: #ffffff;
   }
 }

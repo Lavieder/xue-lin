@@ -1,5 +1,5 @@
-// import store from '@/store'
-// import { Toast } from 'vant'
+import store from '@/store'
+import { Toast } from 'vant'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const Home = () => import('views/Home.vue')
@@ -13,7 +13,10 @@ const Register = () => import('views/Register.vue')
 const Login = () => import('views/Login.vue')
 const Blank = () => import('views/Blank.vue')
 const ForgotPassword = () => import('views/ForgotPassword.vue')
-const Map = () => import('views/map.vue')
+const CreateOrder = () => import('views/CreateOrder.vue')
+const editUser = () => import('components/user/editUser.vue')
+const Address = () => import('views/Address.vue')
+const editAddress = () => import('components/address/editAddress.vue')
 
 const routes = [
   {
@@ -52,15 +55,47 @@ const routes = [
     meta: {
       index: 4,
       title: '我的'
+    }
+  },
+  {
+    path: '/usercenter',
+    name: 'usercenter',
+    component: UserCenter,
+    meta: {
+      index: 9,
+      title: '用户中心',
+      isAuthRequired: true
     },
     children: [
       {
-        path: 'usercenter',
-        name: 'usercenter',
-        component: UserCenter,
+        path: 'edit',
+        name: 'edituser',
+        component: editUser,
         meta: {
-          index: 9,
-          title: '用户中心',
+          index: 10,
+          title: '修改信息',
+          isAuthRequired: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/address',
+    name: 'address',
+    component: Address,
+    meta: {
+      index: 9,
+      title: '管理地址',
+      isAuthRequired: true
+    },
+    children: [
+      {
+        path: 'edit',
+        name: 'editAddress',
+        component: editAddress,
+        meta: {
+          index: 10,
+          title: '编辑收货地址',
           isAuthRequired: true
         }
       }
@@ -112,17 +147,18 @@ const routes = [
     }
   },
   {
-    path: '/blank',
-    name: 'blank',
-    component: Blank,
+    path: '/createorder',
+    name: 'createorder',
+    component: CreateOrder,
     meta: {
-      index: 9
+      index: 7,
+      title: '忘记密码'
     }
   },
   {
-    path: '/map',
-    name: 'map',
-    component: Map,
+    path: '/blank',
+    name: 'blank',
+    component: Blank,
     meta: {
       index: 9
     }
@@ -137,17 +173,31 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // console.log(to, from)
   // 检查是否登录授权
-  // if (to.meta.isAuthRequired && store.state.isLogin === false) {
-  //   Toast.fail({
-  //     message: '您还没有登录，请先登录',
-  //     duration: 1000
-  //   })
-  //   setTimeout(() => {
-  //     return next('/login')
-  //   }, 1200)
-  // } else {
-  //   next()
-  // }
+  if (to.meta.isAuthRequired && store.state.isLogin === false) {
+    Toast.fail({
+      message: '您还没有登录，请先登录',
+      duration: 1000
+    })
+    router.push({
+      path: '/user'
+    })
+  }
+  // 监听路由，切换过渡动画
+  const toIdx = to.meta.index
+  const fromIdx = from.meta.index
+  if (from === undefined) {
+    to.meta.transitionName = 'fade'
+  } else if (toIdx === 5 || toIdx === 6 || toIdx === 7 || toIdx === 8 || toIdx === 9 || toIdx === 10) {
+    if (toIdx + 1 === fromIdx) {
+      to.meta.transitionName = 'slide-right'
+    } else {
+      to.meta.transitionName = 'slide-left'
+    }
+  } else if (fromIdx === 5 || fromIdx === 6 || fromIdx === 9) {
+    to.meta.transitionName = 'slide-right'
+  } else {
+    to.meta.transitionName = 'fade'
+  }
   next()
   document.title = to.meta.title
 })

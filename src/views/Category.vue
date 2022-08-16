@@ -41,7 +41,7 @@
 import { Sidebar, SidebarItem } from 'vant'
 import { reactive, ref } from '@vue/reactivity'
 import { getCateData } from 'network/category'
-import { computed, onActivated, onBeforeMount, getCurrentInstance, onMounted } from '@vue/runtime-core'
+import { computed, getCurrentInstance, onMounted } from '@vue/runtime-core'
 import { useRouter } from 'vue-router'
 export default {
   components: {
@@ -143,10 +143,6 @@ export default {
         params: { id: id }
       })
     }
-    onBeforeMount(() => {
-    })
-    onActivated(() => {
-    })
     onMounted(async () => {
       onSidebarChange(recommendCate.id, active.value, 1)
       getNavHeight()
@@ -275,12 +271,6 @@ export default {
         .van-card:last-child {
           margin-bottom: 15px;
         }
-      }
-      .no-content {
-        margin-top: 15px;
-        text-align: center;
-        font-size: $font-size-medium;
-        color: $color-sub-theme;
       }
     }
     // Hide scrollbar for Chrome, Safari and Opera

@@ -1,7 +1,5 @@
 <template>
-  <div class="nav-bar">
-    <span></span>
-  </div>
+  <div class="create-order">createorder</div>
 </template>
 
 <script>

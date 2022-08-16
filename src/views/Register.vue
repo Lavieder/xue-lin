@@ -7,7 +7,7 @@
     </van-nav-bar>
     <div class="main">
       <div class="default-face">
-        <img src="@/assets/images/default-face.png">
+        <img src="@/assets/images/default-avatar.png">
       </div>
       <div class="input-wrap">
         <van-form @submit="onRegisterSubmit">
@@ -29,9 +29,9 @@
 
 <script>
 import { reactive, toRefs } from '@vue/reactivity'
-import { registerRequest, loginRequest } from 'network/user'
+import { registerRequest, loginRequest, getUserInfo } from 'network/user'
 import { Toast } from 'vant'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { computed } from '@vue/runtime-core'
 import store from '@/store'
 
@@ -49,15 +49,9 @@ export default {
     // 返回按钮
     const onClickBack = () => history.back()
     // 注册验证并提交信息
-    const router = useRouter()
+    // const router = useRouter()
     const onRegisterSubmit = async () => {
       const res = await registerRequest(userInfo)
-      if (res.status === 422) {
-        const errors = res.data.errors
-        const errorText = errors[Object.keys(errors)[0]]
-        Toast.fail(errorText[0])
-        return
-      }
       if (res.status === 201) {
         Toast.success('注册成功')
         setTimeout(() => {
@@ -71,19 +65,25 @@ export default {
       const res = await loginRequest(loginData)
       if (res.status === 200) {
         // 登录成功将token保存到本地存储里
-        console.log(res.data.access_token)
+        // console.log(res.data.access_token)
+        store.commit('SET_IS_LOGIN', true)
+        const resInfo = await getUserInfo()
+        if (resInfo.status === 200) {
+          window.localStorage.setItem('xluser', JSON.stringify(resInfo.data))
+          store.commit('SET_USER_INFO', resInfo.data)
+        }
         window.localStorage.setItem('xltoken', res.data.access_token)
         userInfo.name = ''
         userInfo.email = ''
         userInfo.password = ''
         userInfo.password_confirmation = ''
-        store.commit('SET_IS_LOGIN', true)
         Toast.success({
           message: '登录成功',
           duration: 1000
         })
         setTimeout(() => {
-          router.push({ path: '/' })
+          history.go(-2)
+          // router.push({ path: '/' })
         }, 1300)
       }
     }

@@ -1,6 +1,6 @@
 <template>
   <van-action-bar >
-    <van-action-bar-icon text="购物车" @click="onGoToChildCart" :badge="cartTotal">
+    <van-action-bar-icon text="购物车" @click="onGoToChildCart" :badge="isLogin?cartTotal:''">
       <template #icon>
         <i class="iconfont icon-shinshopgouwuche"></i>
       </template>
@@ -12,11 +12,17 @@
 </template>
 
 <script>
+import router from '@/router'
+import { Toast } from 'vant'
 export default {
   props: {
     cartTotal: {
       type: Number,
       default: 0
+    },
+    isLogin: {
+      type: Boolean,
+      default: false
     }
   },
   setup (props, context) {
@@ -31,7 +37,19 @@ export default {
     }
     // 加入购物车
     const onAddCart = () => {
-      emit('onAddCart')
+      if (props.isLogin) {
+        emit('onAddCart')
+      } else {
+        Toast.fail({
+          message: '您还没有登录哦！',
+          duration: 1000
+        })
+        setTimeout(() => {
+          router.push({
+            path: '/login'
+          })
+        }, 1000)
+      }
     }
     // 立即购买
     const onBuyNow = () => {

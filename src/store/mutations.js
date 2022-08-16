@@ -2,6 +2,9 @@ const mutations = {
   SET_IS_LOGIN: (state, value) => {
     state.isLogin = value
   },
+  SET_USER_INFO: (state, value) => {
+    state.userInfo = value
+  },
   SET_CART_TOTAL: (state, value) => {
     state.cartTotal = value
   },

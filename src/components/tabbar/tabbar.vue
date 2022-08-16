@@ -4,7 +4,7 @@
       :key="tab.path"
       :to="tab.path"
       :name="tab.name"
-      :badge="tab.path === '/cart' ? cartTotal === 0 ? '' : cartTotal : ''"
+      :badge="tab.path === '/cart'&&isLogin ? cartTotal === 0 ? '' : cartTotal : ''"
     >
       <span >{{tab.name}}</span>
       <template #icon='props'>
@@ -17,6 +17,7 @@
 <script>
 import { reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import store from '@/store'
 
 export default {
   components: {
@@ -28,6 +29,9 @@ export default {
     }
   },
   setup (props) {
+    const isLogin = computed(() => {
+      return store.state.isLogin
+    })
     const route = useRoute()
     const tabs = reactive([
       {
@@ -59,7 +63,8 @@ export default {
     })
     return {
       active,
-      tabs
+      tabs,
+      isLogin
     }
   }
 }

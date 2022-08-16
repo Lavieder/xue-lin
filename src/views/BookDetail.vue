@@ -10,15 +10,19 @@
             <span ref="navtitle">书籍详情</span>
         </template>
         <template #right>
-          <i :class="`iconfont icon-share ${iconact?'iconact':''}`" @click.stop="onClickShare"></i>
-          <i :class="`iconfont icon-gengduo ${iconact?'iconact':''}`" @click.stop="onClickMore"></i>
+          <i :class="`iconfont icon-share ${iconact?'iconact':''}`" @click="onClickShare"></i>
+          <van-popover v-model:show="showPopover" :actions="actions" @select="onSelectAction" placement="bottom-end">
+            <template #reference>
+              <i :class="`iconfont icon-gengduo ${iconact?'iconact':''}`" @click.stop="showPopover=!showPopover"></i>
+            </template>
+          </van-popover>
         </template>
       </van-nav-bar>
       <div class="detail-content">
-        <div class="images" ref="images">
-          <img :src="goods.cover_url" :alt="goods.title" />
-        </div>
-        <div class="text-desc">
+        <div ref="haibao">
+          <div class="images" ref="images">
+            <img :src="goods.cover_url" :alt="goods.title" />
+          </div>
           <div class="summary">
             <div class="title-price">
               <p class="title">{{goods.title}}</p>
@@ -40,6 +44,8 @@
               </van-list>
             </div>
           </div>
+        </div>
+        <div class="text-desc">
           <div class="comments">
             <div class="sub-title">
               <span>评价</span>
@@ -77,7 +83,21 @@
         @onAddCart="onAddCart"
         @onBuyNow="onBuyNow"
         :cartTotal="cartTotal"
+        :isLogin="isLogin"
       ></action-bar>
+      <!-- 分享面板 -->
+      <van-share-sheet
+        v-model:show="showShare"
+        description="分享"
+        :options="options"
+        @select="onSelectShareType"
+      >
+      <template #title>
+        <div class="haibao">
+          <img crossorigin="anonymous" :src="haibaoImg" />
+        </div>
+      </template>
+    </van-share-sheet>
     </div>
   </div>
 </template>
@@ -90,6 +110,8 @@ import { getDetailData } from 'network/detail'
 import { addCartGoods } from 'network/cart'
 import { Toast } from 'vant'
 import store from '@/store'
+import clipboard3 from 'vue-clipboard3'
+import html2canvas from 'html2canvas'
 
 export default {
   components: { ActionBar },
@@ -108,6 +130,10 @@ export default {
       { name: '装帧', value: '精装' },
       { name: '运费', value: '包邮' }
     ]
+    // 获取登录状态
+    const isLogin = computed(() => {
+      return store.state.isLogin
+    })
     // 获取图书详情信息
     const getBooKDetail = async () => {
       bookId.value = route.params.id
@@ -176,12 +202,71 @@ export default {
       history.go(-1)
     }
     // 分享按钮
+    const share = reactive({
+      showShare: false,
+      options: [
+        { name: '复制链接', icon: 'link' },
+        { name: '分享海报', icon: 'poster' }
+      ]
+    })
+    const haibao = ref(null)
+    const haibaoImg = ref('')
     const onClickShare = () => {
-      console.log('分享')
+      share.showShare = true
+      setTimeout(() => {
+        html2canvas(haibao.value, {
+          useCORS: true,
+          logging: false,
+          width: 400,
+          backgroundColor: '#ffffff'
+        }).then(canvas => {
+          const src = canvas.toDataURL('image/png', 1)
+          haibaoImg.value = src
+        })
+      }, 20)
+    }
+    const onSelectShareType = async (options) => {
+      const { toClipboard } = clipboard3()
+      const { href } = window.location
+      console.log(options.name)
+      if (options.name === '复制链接') {
+        await toClipboard(href)
+        Toast('已复制到剪贴板')
+      } else if (options.name === '分享海报') {
+        downLoadFile('simple', haibaoImg.value)
+        Toast('图片已保存到相册')
+      }
+      share.showShare = false
+    }
+    // 下载
+    const downLoadFile = (fileName, canvasImg) => {
+      // 创建一个a标签
+      const a = document.createElement('a')
+      // 指定下载文件名称
+      a.href = canvasImg
+      a.download = fileName
+      // a 标签 需要点击触发。所以强制给他分派一个点击事件
+      // 创建一个鼠标事件
+      const event = document.createEvent('MouseEvents')
+      // 初始化鼠标事件
+      event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      // 指定元素对象触发事件
+      a.dispatchEvent(event)
+      a.remove() // 下载之后把创建的元素删除
     }
     // 更多按钮
-    const onClickMore = () => {
-      console.log('更多')
+    const popover = reactive({
+      showPopover: false,
+      actions: [
+        { text: '首页', icon: 'wap-home-o' }
+      ]
+    })
+    const onSelectAction = (action) => {
+      if (action.text === '首页') {
+        router.push({
+          path: '/'
+        })
+      }
     }
     // 从详情页去购物车
     const onGoToChildCart = () => {
@@ -205,13 +290,24 @@ export default {
       const data = { goods_id: book.goods.id, num: 1 }
       const res = await addCartGoods(data)
       if (res.status === 201 || res.status === 204) {
-        Toast.success('加入购物车成功')
+        Toast.success({
+          message: '加入购物车成功',
+          duration: 850
+        })
         store.commit('SET_CART_TOTAL', cartTotal.value + 1)
         setTimeout(() => {
           addCartReady = false
         }, 3000)
       } else {
-        console.log('422 addCartGoods参数异常')
+        console.log(res)
+        const errors = res.data.errors
+        const errorText = errors[Object.keys(errors)[0]]
+        if (errorText[0] === '数量 不能操作库存') {
+          Toast.fail({
+            message: '库存不足',
+            duration: 850
+          })
+        }
       }
     }
     // 立即购买
@@ -233,7 +329,7 @@ export default {
       ...toRefs(book),
       onClickBack,
       onClickShare,
-      onClickMore,
+      onSelectShareType,
       onScroll,
       onGoToDetail,
       navbar,
@@ -243,15 +339,20 @@ export default {
       onCollectBook,
       onAddCart,
       onBuyNow,
-      cartTotal
-
+      cartTotal,
+      isLogin,
+      ...toRefs(share),
+      haibao,
+      haibaoImg,
+      ...toRefs(popover),
+      onSelectAction
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.book-detail::v-deep {
+.book-detail {
   background: #e6e6e6;
   width: 100%;
   position: fixed;
@@ -259,22 +360,17 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index:4;
+  z-index:2;
   overflow-y: scroll;
   overflow-x: hidden;
   scrollbar-width: none; // Firefox
   -ms-overflow-style: none; // IE and Edge
   overflow: -moz-scrollbars-none;
-  .van-nav-bar {
-    padding: 0 12px;
+  :deep(.van-nav-bar)  {
     background: transparent;
     .van-nav-bar__content {
       .van-nav-bar__title {
         color: transparent;
-      }
-      .van-nav-bar__left,
-      .van-nav-bar__right {
-        padding: 0;
       }
       .van-haptics-feedback:active {
         opacity: initial;
@@ -311,75 +407,75 @@ export default {
         object-fit: contain;
       }
     }
-    .text-desc {
-      .summary {
-        padding: 15px 12px;
-        background: #ffffff;
-        .title-price {
-          display: flex;
-          flex-direction: column;
-          .title {
-            font-size: $font-size-large;
-            font-weight: 800;
-          }
-          .price {
-            margin: 15px 0;
-            font-size: $font-size-medium;
-            color: #caaa6a;
-            font-weight: 600;
-            display: flex;
-            align-items: baseline;
-            span {
-              font-size: 30px;
-              font-weight: 400;
-            }
-            .price-stock {
-              display: flex;
-              align-items: flex-start;
-            }
-            .stock {
-              display: inline-block;
-              font-size: $font-size-small-s;
-              color: $color-dot;
-              border: 1px solid $color-dot;
-              padding: 2px 6px;
-              border-radius: 5px;
-              margin-left: 15px;
-              zoom: 0.77;
-            }
-          }
+    .summary {
+      padding: 15px 12px;
+      background: #ffffff;
+      .title-price {
+        display: flex;
+        flex-direction: column;
+        .title {
+          font-size: $font-size-large;
+          font-weight: 800;
         }
-        .desc {
-          font-size: 16px;
-          .cell {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 11px 0;
-            .cell-type {
-              width: 85px;
-              color: #7a7a7a;
-              font-size: 14px;
-            }
-            .van-cell {
-              padding: 0;
-              color: #000000;
-              font-weight: 600;
-            }
-            .van-cell:after {
-              border: 0;
-            }
-            .iconfont {
-              font-size: 12px;
-              color: #000000;
-            }
+        .price {
+          margin: 15px 0;
+          font-size: $font-size-medium;
+          color: #caaa6a;
+          font-weight: 600;
+          display: flex;
+          align-items: baseline;
+          span {
+            font-size: 30px;
+            font-weight: 400;
           }
-          .cell:last-of-type {
-            color: $color-theme;
-            font-weight: $font-weight;
+          .price-stock {
+            display: flex;
+            align-items: flex-start;
+          }
+          .stock {
+            display: inline-block;
+            font-size: $font-size-small-s;
+            color: $color-dot;
+            border: 1px solid $color-dot;
+            padding: 2px 6px;
+            border-radius: 5px;
+            margin-left: 15px;
+            zoom: 0.77;
           }
         }
       }
+      .desc {
+        font-size: 16px;
+        .cell {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 11px 0;
+          .cell-type {
+            width: 85px;
+            color: #7a7a7a;
+            font-size: 14px;
+          }
+          .van-cell {
+            padding: 0;
+            color: #000000;
+            font-weight: 600;
+          }
+          .van-cell:after {
+            border: 0;
+          }
+          .iconfont {
+            font-size: 12px;
+            color: #000000;
+          }
+        }
+        .cell:last-of-type {
+          color: $color-theme;
+          font-weight: $font-weight;
+        }
+      }
+    }
+    .text-desc {
       .like-rec,
       .comments {
         padding: 15px 12px;
@@ -411,6 +507,10 @@ export default {
         background: #ffffff;
         .detail-main {
           padding: 0 12px 15px 12px;
+          :deep(img) {
+            width: 100%;
+            height: 100%;
+          }
         }
         .book-detail-item {
           margin: 0!important;
@@ -454,6 +554,46 @@ export default {
     width: 100%;
     height: 60px;
     background: #ffffff;
+  }
+  :deep(.van-share-sheet) {
+    background: transparent;
+    .van-share-sheet__header {
+      position: relative;
+      background: transparent;
+      height: 440px;
+      padding: 0;
+      .van-share-sheet__title {
+        height: 100%;
+      }
+      .van-share-sheet__description {
+        background: #ffffff;
+        padding: 20px 16px 4px;
+        margin-top: 0;
+        font-size: 16px;
+        color: $color-text;
+        border-radius: 16px 16px 0 0;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+      }
+      .haibao {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 250px;
+        height: 400px;
+        padding: 15px 0;
+        background: #ffffff;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .van-share-sheet__options {
+      background: #ffffff;
+    }
   }
 }
 .book-detail::-webkit-scrollbar {

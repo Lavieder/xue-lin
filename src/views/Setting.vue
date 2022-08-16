@@ -33,6 +33,7 @@ export default {
       const res = await logoutRequest()
       if (res.status === 204) {
         window.localStorage.removeItem('xltoken')
+        window.localStorage.removeItem('xluser')
         Toast.success('退出成功')
         store.commit('SET_IS_LOGIN', false)
         router.push({
