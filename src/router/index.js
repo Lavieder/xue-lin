@@ -13,10 +13,11 @@ const Register = () => import('views/Register.vue')
 const Login = () => import('views/Login.vue')
 const Blank = () => import('views/Blank.vue')
 const ForgotPassword = () => import('views/ForgotPassword.vue')
-const CreateOrder = () => import('views/CreateOrder.vue')
 const editUser = () => import('components/user/editUser.vue')
 const Address = () => import('views/Address.vue')
 const editAddress = () => import('components/address/editAddress.vue')
+const FillInOrder = () => import('views/Order/FillInOrder.vue')
+const SubmitOrder = () => import('views/Order/SubmitOrder.vue')
 
 const routes = [
   {
@@ -147,12 +148,21 @@ const routes = [
     }
   },
   {
-    path: '/createorder',
-    name: 'createorder',
-    component: CreateOrder,
+    path: '/fillorder',
+    name: 'fillorder',
+    component: FillInOrder,
+    meta: {
+      index: 6,
+      title: '填写订单'
+    }
+  },
+  {
+    path: '/suborder',
+    name: 'suborder',
+    component: SubmitOrder,
     meta: {
       index: 7,
-      title: '忘记密码'
+      title: '提交订单'
     }
   },
   {
@@ -188,7 +198,7 @@ router.beforeEach((to, from, next) => {
   if (from === undefined) {
     to.meta.transitionName = 'fade'
   } else if (toIdx === 5 || toIdx === 6 || toIdx === 7 || toIdx === 8 || toIdx === 9 || toIdx === 10) {
-    if (toIdx + 1 === fromIdx) {
+    if (toIdx + 1 === fromIdx || toIdx + 3 === fromIdx) {
       to.meta.transitionName = 'slide-right'
     } else {
       to.meta.transitionName = 'slide-left'

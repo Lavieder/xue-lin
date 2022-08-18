@@ -24,8 +24,10 @@
 <script>
 import { areaList } from '@vant/area-data'
 import { reactive, toRefs } from '@vue/reactivity'
-import { addAddress, removeAddress, updateAddress } from 'network/address'
 import { onBeforeMount } from '@vue/runtime-core'
+import { addAddress, removeAddress, updateAddress } from '@/network/address'
+import { Dialog } from 'vant'
+import store from '@/store'
 export default {
   props: {
     title: {
@@ -45,7 +47,7 @@ export default {
     const addressEdit = reactive({
       areaList: areaList,
       searchResult: [],
-      initAddress: props.editValue
+      initAddress: {}
     })
 
     const resetContent = (content) => {
@@ -56,14 +58,11 @@ export default {
       saveContent.province = content.province
       saveContent.city = content.city
       saveContent.county = content.county
-      if (content.isDefault) {
-        saveContent.is_default = 1
-      }
+      saveContent.is_default = content.isDefault ? 1 : 0
       return saveContent
     }
     const onSave = async (content) => {
       let res = ''
-      console.log(resetContent(content))
       if (props.title === '编辑收货地址') {
         res = await updateAddress(props.editValue.id, resetContent(content))
       } else {
@@ -74,12 +73,18 @@ export default {
         onClickBack()
       }
     }
-    const onDelete = async (id) => {
-      const res = await removeAddress(id)
-      if (res.status === 204) {
-        emit('refreshAddress')
-        onClickBack()
-      }
+    const onDelete = (id) => {
+      Dialog.confirm({
+        message: '是否删除该地址'
+      }).then(async () => {
+        const res = await removeAddress(id)
+        if (res.status === 204) {
+          store.commit('SET_CONTACT_ADDRESS', {})
+          emit('refreshAddress')
+          onClickBack()
+        }
+      }).catch(() => {
+      })
     }
     // 获取地址的省市区编码
     const getAreaCode = () => {
@@ -105,7 +110,13 @@ export default {
       return areaCode
     }
     onBeforeMount(() => {
-      addressEdit.initAddress.areaCode = getAreaCode()
+      if (props.title === '编辑收货地址') {
+        addressEdit.initAddress.name = props.editValue.name
+        addressEdit.initAddress.tel = props.editValue.phone
+        addressEdit.initAddress.addressDetail = props.editValue.address
+        addressEdit.initAddress.isDefault = !!props.editValue.is_default
+        addressEdit.initAddress.areaCode = getAreaCode()
+      }
     })
     return {
       onClickBack,

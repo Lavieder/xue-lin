@@ -13,6 +13,9 @@ const getters = {
   },
   backStatu: () => {
     return state.backStatu
+  },
+  contactAddress: () => {
+    return state.contactAddress
   }
 }
 export default getters

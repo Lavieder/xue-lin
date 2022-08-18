@@ -6,6 +6,11 @@ const state = {
   // 购物车总数量
   cartTotal: 0,
   // 返回状态
-  backStatu: false
+  backStatu: false,
+  // 订单选择地址
+  contactAddress: {
+    aid: 0,
+    data: {}
+  }
 }
 export default state

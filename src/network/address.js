@@ -1,27 +1,10 @@
 import { request } from './request'
 
-// 获取省市县数据
-export function getCity (data) {
-  return request({
-    method: 'GET',
-    url: '/api/city',
-    data
-  })
-}
-
 // 获取地址列表
 export function getAddressData () {
   return request({
     method: 'GET',
     url: '/api/address'
-  })
-}
-
-// 进入地址详情
-export function addressDetail (addressId) {
-  return request({
-    method: 'GET',
-    url: `/api/address/${addressId}`
   })
 }
 
@@ -54,7 +37,7 @@ export function updateAddress (addressId, data) {
 // 设置为默认地址
 export function defaultAddress (addressId) {
   return request({
-    method: 'GET',
+    method: 'PATCH',
     url: `/api/address/${addressId}/default`
   })
 }

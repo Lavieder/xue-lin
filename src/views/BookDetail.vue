@@ -1,7 +1,7 @@
 <template>
   <div class="book-detail" @scroll="onScroll">
     <van-loading color="#000000" v-if="loading"/>
-    <div class="book-detail-main">
+    <div class="book-detail-main" v-else>
       <van-nav-bar fixed :border="false" ref="navbar">
         <template #left>
             <i :class="`iconfont icon-left ${iconact?'iconact':''}`" @click.stop="onClickBack" ></i>
@@ -311,8 +311,15 @@ export default {
       }
     }
     // 立即购买
-    const onBuyNow = () => {
+    const onBuyNow = async () => {
       console.log('立即购买')
+      // const data = { goods_id: book.goods.id, num: 1 }
+      // const res = await addCartGoods(data)
+      // if (res.status === 201 || res.status === 204) {
+      //   router.push({
+      //     path: '/fillorder'
+      //   })
+      // }
     }
     // 只有activated 生命周期在组件使用keep-alive缓存后也能执行相应操作
     onActivated(() => {
@@ -599,17 +606,5 @@ export default {
 .book-detail::-webkit-scrollbar {
   display: none;
   width: 0!important;
-}
-.van-loading {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #ffffff;
 }
 </style>

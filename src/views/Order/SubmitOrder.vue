@@ -1,5 +1,5 @@
 <template>
-  <div class="create-order">createorder</div>
+  <div class="submit-order">提交订单</div>
 </template>
 
 <script>

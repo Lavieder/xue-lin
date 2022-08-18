@@ -32,6 +32,18 @@ a {
   }
 }
 
+.van-loading {
+  position: fixed!important;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+}
 
 .slide-right-enter-active,
 .slide-right-leave-active,

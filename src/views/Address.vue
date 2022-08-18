@@ -1,21 +1,24 @@
 <template>
   <div class="address">
-    <van-nav-bar fixed :border="false" title="管理地址" placeholder>
-      <template #left>
-          <i class="iconfont icon-left" @click.stop="onClickBack" ></i>
-      </template>
-    </van-nav-bar>
-    <div class="address-mian">
-      <van-address-list
-        v-model="chosenAddressId"
-        :switchable="false"
-        :list="list"
-        default-tag-text="默认"
-        @add="onAdd"
-        @edit="onEdit"
-      >
-      </van-address-list>
-    </div>
+    <van-loading color="#000000" v-if="loading"/>
+    <template v-else>
+      <van-nav-bar fixed :border="false" title="管理地址" placeholder>
+        <template #left>
+            <i class="iconfont icon-left" @click.stop="onClickBack" ></i>
+        </template>
+      </van-nav-bar>
+      <div class="address-mian">
+        <template v-if="list.length !== 0">
+          <div class="cell-wrap" v-for="(item, index) in list" :key="index" @click="onChooseAddress(item)">
+            <i class="iconfont icon-xuanze" v-if="caId===item.id"></i>
+            <address-cell :address="item" :type="type" @onEdit="onEdit"></address-cell>
+          </div>
+        </template>
+        <div class="address-list-bottom" @click="onAdd">
+          <span>新增地址</span>
+        </div>
+      </div>
+    </template>
     <router-view v-slot="{ Component }">
       <transition :name="transitionName">
         <component :is="Component" :title="title" :editValue="addressDetail" @refreshAddress="getAddressList" />
@@ -27,9 +30,12 @@
 <script>
 import { reactive, ref, toRefs } from '@vue/reactivity'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, onBeforeMount } from '@vue/runtime-core'
+import { computed, onBeforeMount, watch } from '@vue/runtime-core'
 import { getAddressData } from 'network/address'
+import AddressCell from '@/components/address/addressList.vue'
+import store from '@/store'
 export default {
+  components: { AddressCell },
   name: 'Address',
   setup () {
     const onClickBack = () => {
@@ -40,27 +46,71 @@ export default {
       return route.meta.transitionName
     })
     const addressList = reactive({
-      chosenAddressId: '1',
       list: [],
-      addressDetail: {}
+      addressDetail: {},
+      type: 'address'
+    })
+    // 填写订单选择地址
+    const caId = computed(() => {
+      if (route.params.type === 'order') {
+        return store.state.contactAddress.aid
+      }
+      return false
+    })
+    // 监听loading
+    const loading = ref(true)
+    watch(() => addressList.list.length, (n, o) => {
+      if (n) {
+        loading.value = false
+      } else {
+        loading.value = true
+      }
+    })
+    watch(() => caId.value, (n, o) => {
+      onAddressList(n)
     })
     // 获取地址列表
     const getAddressList = async () => {
       const res = await getAddressData()
       if (res.status === 200) {
-        addressList.list = res.data.data.map(item => {
-          return {
-            id: item.id,
-            name: item.name,
-            tel: item.phone,
-            province: item.province,
-            city: item.city,
-            county: item.county,
-            address: `${item.province}${item.city}${item.county}${item.address}`,
-            addressDetail: item.address,
-            isDefault: !!item.is_default
+        if (res.data.data.length === 0) {
+          loading.value = false
+        }
+        if (res.data.data.length === 1 && caId.value === undefined) {
+          store.commit('SET_CONTACT_ADDRESS', res.data.data[0])
+        }
+        addressList.list = unshiftDefault(res.data.data)
+        onAddressList(caId.value || 0)
+      }
+    }
+    // 把默认地址排在最前位
+    const unshiftDefault = (list) => {
+      list.forEach((item, index) => {
+        if (item.is_default) {
+          const data = list.filter(item => {
+            return item.is_default
+          })[0]
+          if (item.id === data.id) {
+            list.unshift(list.splice(index, 1)[0])
           }
-        })
+        }
+      })
+      return list
+    }
+    // 把选中地址排第一位
+    const onAddressList = (n) => {
+      if (!n) return false
+      addressList.list.forEach((item, index) => {
+        if (item.id === parseInt(n)) {
+          addressList.list.unshift(addressList.list.splice(index, 1)[0])
+        }
+      })
+    }
+    // 选择收货地址
+    const onChooseAddress = (item) => {
+      if (caId.value) {
+        history.back()
+        store.commit('SET_CONTACT_ADDRESS', item)
       }
     }
     const router = useRouter()
@@ -71,7 +121,7 @@ export default {
         path: '/address/edit'
       })
     }
-    const onEdit = (item, index) => {
+    const onEdit = (item) => {
       title.value = '编辑收货地址'
       addressList.addressDetail = item
       router.push({
@@ -84,11 +134,14 @@ export default {
     return {
       onClickBack,
       ...toRefs(addressList),
+      loading,
       onAdd,
       onEdit,
       transitionName,
       title,
-      getAddressList
+      getAddressList,
+      onChooseAddress,
+      caId
     }
   }
 
@@ -105,51 +158,42 @@ export default {
   z-index: 2;
   background: #ffffff;
   .address-mian {
-    :deep(.van-address-list) {
-      padding: 0;
-      .van-address-item {
-        margin: 0;
-        border-radius: 0;
-        position: relative;
-        height: 85px;
-        display: flex;
-        align-items: center;
-        .van-address-item__name {
-          flex-direction: row-reverse;
-          justify-content: flex-end;
-          margin-bottom: 3px;
-          .van-address-item__tag {
-            margin-left: 0;
-            margin-right: 10px;
-            background: $color-dot;
-            border-radius: 2px;
-          }
-        }
-        .van-address-item__edit {
-          right: 0;
-        }
-      }
-      .van-address-item:not(:last-child)::after {
-        content: "";
-        display: inline-block;
-        border-bottom: 1px solid #e7e7e7;
-        transform: scaleY(.5);
-        position: absolute;
-        right: 0;
-        left: 0;
-        bottom: 0;
+    .cell-wrap {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      .icon-xuanze {
+        margin-right: 10px;
+        color: $color-dot;
       }
     }
-    :deep(.van-address-list__bottom) {
-      z-index: 2;
+    .address-cell:not(:last-child)::after {
+      content: "";
+      display: inline-block;
+      border-bottom: 0.02667rem solid #e7e7e7;
+      transform: scaleY(0.5);
+      position: absolute;
+      right: 0;
+      left: 0;
+      bottom: 0;
+    }
+    .address-list-bottom {
+      position: fixed;
       bottom: 12px;
-      .van-address-list__add {
-        margin: 5px auto;
-        background: $color-theme;
-        border:none;
-        width: 75%;
-        height: 40px;
-      }
+      left: 0;
+      right: 0;
+      text-align: center;
+      margin: 0 auto;
+      background: $color-theme;
+      border: none;
+      width: 75%;
+      height: 40px;
+      line-height: 40px;
+      color: #f7f7f7;
+      border-radius: 20px;
+    }
+    .address-list-bottom:active {
+      background: #bd9f63;
     }
   }
 }

@@ -7,8 +7,8 @@ import {
   Lazyload, Tab, Tabs, Card, Stepper, SubmitBar,
   ActionBar, ActionBarIcon, ActionBarButton,
   Form, Field, CellGroup, Badge, SwipeCell,
-  ShareSheet, Popover, AddressList, AddressEdit,
-  Area, Tag
+  ShareSheet, Popover, AddressEdit,
+  Area, Tag, ContactCard
 } from 'vant'
 
 // 引入iconfont样式
@@ -24,6 +24,6 @@ createApp(App).use(store).use(router).use(Lazyload, {
   Tab, Tabs, Card, Stepper, SubmitBar,
   ActionBar, ActionBarIcon, ActionBarButton,
   Form, Field, CellGroup, Badge, SwipeCell,
-  ShareSheet, Popover, AddressList, AddressEdit,
-  Area, Tag
+  ShareSheet, Popover, AddressEdit,
+  Area, Tag, ContactCard
 ).mount('#app')

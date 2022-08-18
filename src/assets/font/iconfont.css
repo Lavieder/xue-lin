@@ -1,9 +1,9 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3543714 */
-  src: url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.woff2?t=1660445789166') format('woff2'),
-       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.woff?t=1660445789166') format('woff'),
-       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.ttf?t=1660445789166') format('truetype'),
-       url('//at.alicdn.com/t/c/font_3543714_6l0nopn92c9.svg?t=1660445789166#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/c/font_3543714_oe8saerytqq.woff2?t=1660821079675') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3543714_oe8saerytqq.woff?t=1660821079675') format('woff'),
+       url('//at.alicdn.com/t/c/font_3543714_oe8saerytqq.ttf?t=1660821079675') format('truetype'),
+       url('//at.alicdn.com/t/c/font_3543714_oe8saerytqq.svg?t=1660821079675#iconfont') format('svg');
 }
 
 .iconfont {
@@ -12,6 +12,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-xuanze:before {
+  content: "\e653";
+}
+
+.icon-bianji:before {
+  content: "\e61d";
 }
 
 .icon-weidenglu:before {

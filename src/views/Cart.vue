@@ -174,7 +174,6 @@ export default {
         console.log('删除商品异常')
       }
     }
-    // 删除选中商品 计算选中状态
     // 购物车 根据选中数量计算价格
     const checkedNum = ref(0)
     const totalPrice = computed(() => {
@@ -239,14 +238,13 @@ export default {
     const onOverLimit = () => {
       event.stopPropagation()
     }
-    // 提交订单
+    // 结算订单
     const onSubmit = () => {
       if (cartData.checked.length === 0) {
         Toast.fail('未选中商品！')
       } else {
-        console.log('提交订单')
         router.push({
-          path: '/createorder'
+          path: '/fillorder'
         })
       }
     }
@@ -510,17 +508,5 @@ export default {
       left: -1.5px;
     }
   }
-}
-.van-loading {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  z-index: -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #ffffff;
 }
 </style>
