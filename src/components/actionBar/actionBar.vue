@@ -5,7 +5,7 @@
         <i class="iconfont icon-shinshopgouwuche"></i>
       </template>
     </van-action-bar-icon>
-    <van-action-bar-icon icon="like-o" text="收藏" @click="onCollectBook"/>
+    <van-action-bar-icon :icon="isCollect?'like':'like-o'" :color="isCollect?'#ff5050':''" text="收藏" @click="onCollectBook"/>
     <van-action-bar-button type="warning" text="加入购物车" @click="onAddCart" />
     <van-action-bar-button type="danger" text="立即购买" @click="onBuyNow" />
   </van-action-bar>
@@ -21,6 +21,10 @@ export default {
       default: 0
     },
     isLogin: {
+      type: Boolean,
+      default: false
+    },
+    isCollect: {
       type: Boolean,
       default: false
     }

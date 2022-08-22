@@ -20,6 +20,13 @@ export function logoutRequest () {
     url: '/api/auth/logout'
   })
 }
+// 属性Token
+export function refreshToken () {
+  return request({
+    method: 'POST',
+    url: '/api/auth/refresh'
+  })
+}
 
 // 获取个人信息
 export function getUserInfo () {

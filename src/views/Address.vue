@@ -10,8 +10,14 @@
       <div class="address-mian">
         <template v-if="list.length !== 0">
           <div class="cell-wrap" v-for="(item, index) in list" :key="index" @click="onChooseAddress(item)">
-            <i class="iconfont icon-xuanze" v-if="caId===item.id"></i>
+            <i class="iconfont icon-xuanze" v-if="caWay==='order' &&caId===item.id"></i>
             <address-cell :address="item" :type="type" @onEdit="onEdit"></address-cell>
+          </div>
+        </template>
+        <template v-else>
+          <div class="nullContent">
+            <i class="iconfont icon-shinshopshouhuodizhi"></i>
+            <div>请添加地址</div>
           </div>
         </template>
         <div class="address-list-bottom" @click="onAdd">
@@ -52,25 +58,23 @@ export default {
     })
     // 填写订单选择地址
     const caId = computed(() => {
-      if (route.params.type === 'order') {
-        return store.state.contactAddress.aid
-      }
-      return false
+      return store.state.contactAddress.aid
+    })
+    const caWay = computed(() => {
+      return store.state.contactAddress.way
     })
     // 监听loading
     const loading = ref(true)
     watch(() => addressList.list.length, (n, o) => {
       if (n) {
         loading.value = false
-      } else {
-        loading.value = true
       }
     })
     watch(() => caId.value, (n, o) => {
       onAddressList(n)
     })
     // 获取地址列表
-    const getAddressList = async () => {
+    const getAddressList = async (type) => {
       const res = await getAddressData()
       if (res.status === 200) {
         if (res.data.data.length === 0) {
@@ -141,7 +145,8 @@ export default {
       title,
       getAddressList,
       onChooseAddress,
-      caId
+      caId,
+      caWay
     }
   }
 

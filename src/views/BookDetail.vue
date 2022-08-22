@@ -84,6 +84,7 @@
         @onBuyNow="onBuyNow"
         :cartTotal="cartTotal"
         :isLogin="isLogin"
+        :isCollect="isCollect"
       ></action-bar>
       <!-- 分享面板 -->
       <van-share-sheet
@@ -108,6 +109,7 @@ import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import ActionBar from '@/components/actionBar/actionBar.vue'
 import { getDetailData } from 'network/detail'
 import { addCartGoods } from 'network/cart'
+import { collectsGoods } from 'network/collect'
 import { Toast } from 'vant'
 import store from '@/store'
 import clipboard3 from 'vue-clipboard3'
@@ -135,6 +137,7 @@ export default {
       return store.state.isLogin
     })
     // 获取图书详情信息
+    const isCollect = ref(false)
     const getBooKDetail = async () => {
       bookId.value = route.params.id
       const res = await getDetailData(route.params.id)
@@ -142,6 +145,9 @@ export default {
         book.goods = priceToFixed(res.data.goods)
         book.like_goods = res.data.like_goods
         book.types = types
+        if (book.goods.is_collect) {
+          isCollect.value = true
+        }
         book.types.splice(book.types.length - 1, 0, { name: '分类', value: book.goods.category_id })
       }
     }
@@ -273,8 +279,21 @@ export default {
       console.log('从详情页去购物车')
     }
     // 收藏图书商品
-    const onCollectBook = () => {
-      console.log('收藏')
+    const onCollectBook = async () => {
+      const res = await collectsGoods(route.params.id)
+      let msg = ''
+      if (res.status === 201) {
+        isCollect.value = true
+        msg = '收藏成功'
+      }
+      if (res.status === 204) {
+        isCollect.value = false
+        msg = '取消收藏'
+      }
+      Toast({
+        message: msg,
+        duration: 1000
+      })
     }
     // 获取购物车徽标数量
     const cartTotal = computed(() => {
@@ -348,6 +367,7 @@ export default {
       onBuyNow,
       cartTotal,
       isLogin,
+      isCollect,
       ...toRefs(share),
       haibao,
       haibaoImg,

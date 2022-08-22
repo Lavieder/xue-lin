@@ -18,6 +18,7 @@ const Address = () => import('views/Address.vue')
 const editAddress = () => import('components/address/editAddress.vue')
 const FillInOrder = () => import('views/Order/FillInOrder.vue')
 const SubmitOrder = () => import('views/Order/SubmitOrder.vue')
+const Collects = () => import('views/Collects.vue')
 
 const routes = [
   {
@@ -172,6 +173,16 @@ const routes = [
     meta: {
       index: 9
     }
+  },
+  {
+    path: '/collect',
+    name: 'collect',
+    component: Collects,
+    meta: {
+      index: 9,
+      title: '我的收藏',
+      isAuthRequired: true
+    }
   }
 ]
 
@@ -198,7 +209,7 @@ router.beforeEach((to, from, next) => {
   if (from === undefined) {
     to.meta.transitionName = 'fade'
   } else if (toIdx === 5 || toIdx === 6 || toIdx === 7 || toIdx === 8 || toIdx === 9 || toIdx === 10) {
-    if (toIdx + 1 === fromIdx || toIdx + 3 === fromIdx) {
+    if (toIdx + 1 === fromIdx || toIdx + 3 === fromIdx || toIdx - 4 === fromIdx) {
       to.meta.transitionName = 'slide-right'
     } else {
       to.meta.transitionName = 'slide-left'

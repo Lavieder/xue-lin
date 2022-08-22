@@ -21,7 +21,7 @@
             <i class="iconfont icon-xiangyou"></i>
           </router-link>
         </div>
-        <div class="collect mar">
+        <div class="collect mar" @click="onCollect">
           <span>收藏</span>
           <i class="iconfont icon-xiangyou"></i>
         </div>
@@ -106,16 +106,39 @@ export default {
         router.push({
           path: '/address'
         })
+        store.commit('SET_CONTACT_ADDRESS', 'user')
       }
     }
+    // 收藏
+    const onCollect = () => {
+      if (!isLogin.value) {
+        Toast.fail({
+          message: '您还没有登录哦！',
+          duration: 1000
+        })
+        return false
+      }
+      router.push({
+        path: '/collect'
+      })
+    }
+    // 刷新token
+    // const onRefreshToken = async () => {
+    //   const res = await refreshToken()
+    //   if (res.status === 200) {
+    //     window.localStorage.setItem('xltoken', res.data.access_token)
+    //   }
+    // }
     onBeforeMount(() => {
+      // onRefreshToken()
     })
     return {
       isLogin,
       userInfo,
       cellList,
       onGotoSetting,
-      onClickCell
+      onClickCell,
+      onCollect
     }
   }
 }

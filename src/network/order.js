@@ -1,27 +1,21 @@
 import { request } from './request'
 
-// 获取订单列表
-export function getOrdersData (data) {
-  return request({
-    method: 'GET',
-    url: '/api/orders',
-    data
-  })
-}
-
-// 提交订单
-export function submitOrder (addressId, data) {
-  return request({
-    method: 'POST',
-    url: `/api/orders/${addressId}`
-  })
-}
-
 // 订单预览,从购物车进入预览，在预览中提交订单
 export function getOrderPreview () {
   return request({
     method: 'GET',
     url: '/api/orders/preview'
+  })
+}
+
+// 提交订单
+export function createOrder (addressId) {
+  return request({
+    method: 'POST',
+    url: '/api/orders',
+    data: {
+      address_id: addressId
+    }
   })
 }
 
@@ -49,6 +43,15 @@ export function getPayStatus (orderId) {
   return request({
     method: 'GET',
     url: `/api/orders/${orderId}/status`
+  })
+}
+
+// 获取订单列表
+export function getOrdersData (data) {
+  return request({
+    method: 'GET',
+    url: '/api/orders',
+    data
   })
 }
 

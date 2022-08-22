@@ -16,29 +16,17 @@
                 <label :for="'ck'+index"></label>
               </div>
               <van-swipe-cell ref="swipeCell">
-                <van-card
-                  :price="item.goods.price.toFixed(2)"
-                  :title="item.goods.title"
-                  :desc="item.goods.description"
-                  :thumb="item.goods.cover_url"
-                  @click="onGoToDetail(item.goods_id)"
-                >
-                  <template #bottom>
-                    <van-stepper v-model="item.num"
-                      integer
-                      min="1"
-                      :max="item.goods.stock"
-                      :name="item.id"
-                      @click.stop="onStepperClick"
-                      @blur="onNumBlur(item.id)"
-                      @change="onChangeNum"
-                      @plus="onPlusNum"
-                      @minus="onMinusNum"
-                      @overlimit="onOverLimit"
-                      :long-press="false"
-                    />
-                  </template>
-                </van-card>
+                <card
+                  :item="item"
+                  @onComputedNum="onComputedNum"
+                  @onGoToDetail="onGoToDetail"
+                  @onStepperClick="onStepperClick"
+                  @onNumBlur="onNumBlur"
+                  @onChangeNum="onChangeNum"
+                  @onPlusNum="onPlusNum"
+                  @onMinusNum="onMinusNum"
+                  @onOverLimit="onOverLimit"
+                ></card>
                   <template #right>
                     <van-button square text="删除" type="danger" class="delete-button" @click="deleteGoods(item.id)" />
                   </template>
@@ -55,7 +43,7 @@
             </div>
           </van-submit-bar>
         </template>
-        <div class="nullCart" v-if="list.length===0">
+        <div class="nullContent" v-if="list.length===0">
           <i class="iconfont icon-shinshopgouwuche"></i>
           <div>购物车还是空的</div>
           <div class="looking" @click="onLooking">随便看看</div>
@@ -63,7 +51,7 @@
       </template>
     </template>
     <template v-else>
-      <div class="nullCart">
+      <div class="nullContent">
         <i class="iconfont icon-weidenglu"></i>
         <div>暂未获取到您的信息</div>
         <div class="looking" @click="toLogin">登录</div>
@@ -80,8 +68,10 @@ import { getCartGoods, modifyCartNum, checkedCartGoods, deleteCartGoods } from '
 import store from '@/store'
 import router from '@/router'
 import { Toast } from 'vant'
+import Card from '@/components/card/card.vue'
 
 export default {
+  components: [Card],
   props: {
     showTab: {
       type: Boolean,
@@ -198,17 +188,39 @@ export default {
     // 输入数量框焦点状态
     let blur = true
     const onNumBlur = (id) => {
+      let num = event.target.value
       blur = true
       let sum = 0
+      let increNum = 0
       cartData.list.forEach(goods => {
         if (goods.id === id) {
-          onChangeNum(goods.num, { name: id })
+          if (num > goods.goods.stock) {
+            Toast.fail({
+              message: '数量超过库存数量!',
+              duration: 1000
+            })
+            num = goods.num
+          }
+          onChangeNum(num, { name: id })
+          if (num > goods.num) {
+            increNum = num - goods.num
+          } else {
+            increNum = goods.num - num
+          }
         }
         sum += goods.num
       })
-      store.commit('SET_CART_TOTAL', sum)
+      store.commit('SET_CART_TOTAL', sum + parseInt(increNum))
     }
     const onStepperClick = () => {}
+    // 计算v-model=num的值
+    const onComputedNum = (num, id) => {
+      cartData.list.forEach(item => {
+        if (item.id === id) {
+          item.num = num
+        }
+      })
+    }
     // 更改商品数量
     const onChangeNum = async (num, item) => {
       event.stopPropagation()
@@ -269,6 +281,7 @@ export default {
     }
     onActivated(() => {
       getCartData()
+      store.commit('SET_CONTACT_ADDRESS', 'cart')
     })
     onMounted(() => {
     })
@@ -291,6 +304,7 @@ export default {
       deleteGoods,
       totalPrice,
       checkedNum,
+      onComputedNum,
       onGoToDetail,
       onLooking,
       toLogin,
@@ -302,7 +316,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cart::v-deep {
+.cart {
   background: #ffffff;
   .cart-wrap {
     padding: 46px 15px 106px;
@@ -334,84 +348,6 @@ export default {
           transition: 0s !important;
         }
       }
-      .van-card {
-        flex: 1;
-        background: #ffffff;
-        padding: 15px 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-end;
-        .van-card__header {
-          flex: 1;
-          .van-card__content {
-            justify-content: space-evenly;
-            .van-card__title {
-              width: 220px;
-              font-size: $font-size-medium;
-              font-weight: 600;
-            }
-            .van-card__desc {
-              flex: none;
-              font-size: $font-size-small;
-              width: 220px;
-              color: #969696;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-              letter-spacing: 1px;
-              line-height: 18px;
-              margin: 8px 0;
-            }
-            .van-card__price {
-              font-size: $font-size-medium-x;
-              color: $color-theme;
-              font-weight: 600;
-              .van-card__price-currency {
-                font-size: $font-size-small-s;
-                margin-right: 3px;
-              }
-            }
-          }
-          .van-card__bottom {
-            margin-right: 10px;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-end;
-            .van-stepper {
-              button {
-                height: 20px;
-                width: 20px;
-                background: transparent;
-                color: #000000;
-              }
-              input {
-                margin: 0 5px;
-                height: 15px;
-                border-radius: 0.13333rem;
-                font-size: $font-size-small-s;
-              }
-              .van-stepper__minus:before,
-              .van-stepper__plus:before {
-                width: 50%;
-                height: 2px;
-                border-radius: 2px;
-              }
-              .van-stepper__minus:after,
-              .van-stepper__plus:after {
-                width: 2px;
-                height: 50%;
-                border-radius: 2px;
-              }
-              .van-stepper__minus--disabled,
-              .van-stepper__plus--disabled {
-                color: #bdbdbd;
-              }
-            }
-          }
-        }
-      }
       .van-swipe-cell__right {
         .delete-button {
           height: 100%;
@@ -426,7 +362,7 @@ export default {
     width: 0 !important;
     height: 0;
   }
-  .van-submit-bar {
+  :deep(.van-submit-bar) {
     margin-bottom: 55px;
     border-top: 1px solid #f5f5f5;
     .van-submit-bar__bar {
@@ -447,27 +383,6 @@ export default {
     }
     .allChecked-wrap {
       display: flex;
-    }
-  }
-  .nullCart {
-    width: 100%;
-    height: 566px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    color: #959595;
-    .iconfont {
-      font-size: 80px;
-      margin-bottom: 10px;
-      margin-top: 120px;
-    }
-    .looking {
-      padding: 7px 17px;
-      border: 1px solid #959595;
-      border-radius: 25px;
-      margin-top: 30px;
-      font-size: 16px;
     }
   }
   .select-input {

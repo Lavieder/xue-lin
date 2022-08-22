@@ -10,7 +10,8 @@ const state = {
   // 订单选择地址
   contactAddress: {
     aid: 0,
-    data: {}
+    data: {},
+    way: ''
   }
 }
 export default state

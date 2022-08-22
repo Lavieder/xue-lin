@@ -38,6 +38,11 @@ export function request (config) {
       Toast.fail(errorText[0])
       return
     }
+    if (err.response.status_code === 400) {
+      const message = err.response.data.message
+      Toast.fail(message)
+      return
+    }
 
     return err.response
   })
