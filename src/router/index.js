@@ -18,6 +18,8 @@ const Address = () => import('views/Address.vue')
 const editAddress = () => import('components/address/editAddress.vue')
 const FillInOrder = () => import('views/Order/FillInOrder.vue')
 const SubmitOrder = () => import('views/Order/SubmitOrder.vue')
+const PayQRCode = () => import('views/Order/PayQRCode.vue')
+const Bargain = () => import('views/Bargain.vue')
 const Collects = () => import('views/Collects.vue')
 
 const routes = [
@@ -104,6 +106,16 @@ const routes = [
     ]
   },
   {
+    path: '/bargain',
+    name: 'bargain',
+    component: Bargain,
+    meta: {
+      index: 9,
+      title: '我的交易',
+      isAuthRequired: true
+    }
+  },
+  {
     path: '/detail/:id',
     name: 'detail',
     component: BookDetail,
@@ -179,8 +191,18 @@ const routes = [
     name: 'collect',
     component: Collects,
     meta: {
-      index: 9,
+      index: 6,
       title: '我的收藏',
+      isAuthRequired: true
+    }
+  },
+  {
+    path: '/pay',
+    name: 'payqrcode',
+    component: PayQRCode,
+    meta: {
+      index: 7,
+      title: '二维码支付',
       isAuthRequired: true
     }
   }
@@ -206,10 +228,11 @@ router.beforeEach((to, from, next) => {
   // 监听路由，切换过渡动画
   const toIdx = to.meta.index
   const fromIdx = from.meta.index
+  // console.log(toIdx, fromIdx)
   if (from === undefined) {
     to.meta.transitionName = 'fade'
   } else if (toIdx === 5 || toIdx === 6 || toIdx === 7 || toIdx === 8 || toIdx === 9 || toIdx === 10) {
-    if (toIdx + 1 === fromIdx || toIdx + 3 === fromIdx || toIdx - 4 === fromIdx) {
+    if (toIdx + 1 === fromIdx || toIdx + 3 === fromIdx) {
       to.meta.transitionName = 'slide-right'
     } else {
       to.meta.transitionName = 'slide-left'

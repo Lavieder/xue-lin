@@ -10,10 +10,40 @@
           :immediate-check="false"
           @load="onLoad"
         >
-          <div class="book-item-wrap" ref="list">
+          <div class="book-item-wrap" ref="list" v-if="type !== 'bargain'">
             <lazy-component class="lazy-book" v-for="(item, index) in tabContent" :key="index">
               <book-item :book-item="item" @onGoToDetail="onGoToDetail"></book-item>
             </lazy-component>
+          </div>
+          <div class="card-wrap" v-else>
+            <template v-if="tabContent.length !== 0">
+              <lazy-component class="lazy-book" v-for="(item, index) in tabContent" :key="index">
+                <div class="order-item">
+                  <div class="title">
+                    <i class="iconfont icon-dingdan1"><span>在线商城</span></i>
+                    <span>等待付款</span>
+                  </div>
+                  <div class="order-goods">
+                    <template v-for="(good,index) in item.orderDetails.data" :key="index">
+                      <card
+                        :item="good"
+                        type="bargain"
+                      ></card>
+                    </template>
+                  </div>
+                  <div class="order-action">
+                    <div class="cancel-order">取消订单</div>
+                    <div class="now-pay">立即付款</div>
+                  </div>
+                </div>
+              </lazy-component>
+            </template>
+            <template v-else>
+              <div class="nullContent">
+                <i :class="`iconfont ${nullContent.icon}`"></i>
+                <div>您还没有{{nullContent.text}}订单</div>
+              </div>
+            </template>
           </div>
         </van-list>
       </van-tab>
@@ -22,15 +52,20 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
+import { onActivated, onMounted, ref } from 'vue'
 import BookItem from 'components/bookItem/bookItem'
+import Card from 'components/card/card'
 
 export default {
   name: 'Tab',
   components: {
-    BookItem
+    BookItem, Card
   },
   props: {
+    type: {
+      type: String,
+      default: ''
+    },
     tabList: {
       type: Array,
       default: () => []
@@ -40,6 +75,14 @@ export default {
       default: () => []
     },
     loadStatus: {
+      type: Object,
+      default: () => {}
+    },
+    activeIdx: {
+      type: Number,
+      default: 0
+    },
+    nullContent: {
       type: Object,
       default: () => {}
     }
@@ -59,7 +102,9 @@ export default {
     const onLoad = () => {
       emit('onLoadBook', active.value)
       loading.value = props.loadStatus.loading
-      finished.value = props.loadStatus.finished
+      if (props.type !== 'bargain') {
+        finished.value = props.loadStatus.finished
+      }
     }
     const onGoToDetail = (id) => {
       emit('onGoToDetail', id)
@@ -69,6 +114,9 @@ export default {
       // console.log(scroll)
       emit('onTabScroll', scroll)
     }
+    onActivated(() => {
+      active.value = props.activeIdx
+    })
     onMounted(() => {
       // window.addEventListener('scroll', () => {
       //   console.log(instance.refs.list[0].offsetHeight)

@@ -25,7 +25,7 @@ export function modifyCartNum (cartId, data) {
   })
 }
 
-// 改变购物车商品选中状态，参数：选中商品的 ID
+// 改变购物车商品选中状态，参数：购物车ID
 export function checkedCartGoods (data) {
   return request({
     method: 'PATCH',

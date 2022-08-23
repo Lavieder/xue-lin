@@ -108,7 +108,7 @@ import { onMounted, onActivated, ref, reactive, toRefs, watch, computed } from '
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import ActionBar from '@/components/actionBar/actionBar.vue'
 import { getDetailData } from 'network/detail'
-import { addCartGoods } from 'network/cart'
+import { addCartGoods, getCartGoods, checkedCartGoods } from 'network/cart'
 import { collectsGoods } from 'network/collect'
 import { Toast } from 'vant'
 import store from '@/store'
@@ -331,14 +331,22 @@ export default {
     }
     // 立即购买
     const onBuyNow = async () => {
-      console.log('立即购买')
-      // const data = { goods_id: book.goods.id, num: 1 }
-      // const res = await addCartGoods(data)
-      // if (res.status === 201 || res.status === 204) {
-      //   router.push({
-      //     path: '/fillorder'
-      //   })
-      // }
+      // 把购物车的商品设为未选中状态
+      const data = { goods_id: book.goods.id, num: 1 }
+      const res = await addCartGoods(data)
+      if (res.status === 201 || res.status === 204) {
+        const cartList = await getCartGoods()
+        if (cartList.status === 200) {
+          cartList.data.data.forEach(async (item) => {
+            if (item.goods_id === book.goods.id) {
+              await checkedCartGoods({ cart_ids: [item.id] })
+              router.push({
+                path: '/fillorder'
+              })
+            }
+          })
+        }
+      }
     }
     // 只有activated 生命周期在组件使用keep-alive缓存后也能执行相应操作
     onActivated(() => {

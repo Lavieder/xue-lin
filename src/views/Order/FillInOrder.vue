@@ -35,7 +35,7 @@
 
 <script>
 import { computed, onActivated, ref } from '@vue/runtime-core'
-import { getOrderPreview } from '@/network/order'
+import { createOrder, getOrderPreview } from '@/network/order'
 import AddressCell from '@/components/address/addressList.vue'
 import Card from '@/components/card/card.vue'
 import { useRouter } from 'vue-router'
@@ -109,11 +109,14 @@ export default {
       })
     }
     // 提交订单
-    const onSubmit = () => {
-      router.push({
-        name: 'suborder',
-        params: { price: total.value.price }
-      })
+    const onSubmit = async () => {
+      const res = await createOrder(address.value.id)
+      if (res.status === 200) {
+        router.push({
+          name: 'suborder',
+          params: { price: total.value.price, orderId: res.data.id }
+        })
+      }
     }
     onActivated(() => {
       if (way.value === 'cart') {

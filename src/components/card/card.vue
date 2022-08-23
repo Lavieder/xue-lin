@@ -2,12 +2,12 @@
   <van-card
     :price="item.goods.price.toFixed(2)"
     :title="item.goods.title"
-    :desc="item.goods.description"
+    :desc="type==='bargain'?'':item.goods.description"
     :thumb="item.goods.cover_url"
     @click="onGoToDetail(item.goods_id)"
   >
     <template #bottom>
-      <div class="order-num" v-if="way === 'order'">
+      <div class="order-num" v-if="way === 'order'||type==='bargain'">
         <i class="iconfont icon-chenghao"></i>
         <span>{{item.num}}</span>
       </div>

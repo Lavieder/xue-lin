@@ -30,22 +30,12 @@
             我的交易
           </div>
           <div class="deal-wrap">
-            <div class="deal-cate">
-              <i class="iconfont icon-daifukuan"></i>
-              <span>待付款</span>
-            </div>
-            <div class="deal-cate">
-              <i class="iconfont icon-shouhuo"></i>
-              <span>待收货</span>
-            </div>
-            <div class="deal-cate">
-              <i class="iconfont icon-pingjia"></i>
-              <span>待评价</span>
-            </div>
-            <div class="deal-cate">
-              <i class="iconfont icon-dingdan"></i>
-              <span>全部订单</span>
-            </div>
+            <template v-for="(item, index) in bargainList" :key="index">
+              <div class="deal-cate" @click.stop="onMyBargain(index+1)">
+                <i :class="`iconfont ${item.icon}`"></i>
+                <span>{{item.text}}</span>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -122,6 +112,19 @@ export default {
         path: '/collect'
       })
     }
+    // 我的交易
+    const bargainList = ref([
+      { text: '待付款', icon: 'icon-daifukuan' },
+      { text: '待收货', icon: 'icon-shouhuo' },
+      { text: '待评价', icon: 'icon-pingjia' },
+      { text: '全部订单', icon: 'icon-dingdan' }
+    ])
+    const onMyBargain = (index) => {
+      router.push({
+        name: 'bargain',
+        params: { actIdx: index }
+      })
+    }
     // 刷新token
     // const onRefreshToken = async () => {
     //   const res = await refreshToken()
@@ -136,9 +139,11 @@ export default {
       isLogin,
       userInfo,
       cellList,
+      bargainList,
       onGotoSetting,
       onClickCell,
-      onCollect
+      onCollect,
+      onMyBargain
     }
   }
 }

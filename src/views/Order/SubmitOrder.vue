@@ -2,19 +2,20 @@
   <div class="submit-order">
     <van-nav-bar fixed :border="false" title="支付订单" placeholder>
       <template #left>
-          <i class="iconfont icon-left" @click.stop="onClickBack" ></i>
+        <i class="iconfont icon-left" @click.stop="onClickBack"></i>
       </template>
     </van-nav-bar>
     <div class="price-wrap">
       <span class="currency">￥</span>
-      <span class="price">{{price.integer}}</span>.<span class="split">{{price.decimal}}</span>
+      <span class="price">{{ price.integer }}</span
+      >.<span class="split">{{ price.decimal }}</span>
     </div>
     <div class="pay-type">
       <van-radio-group v-model="checked">
-        <template v-for="(item,index) in cellList" :key="index">
+        <template v-for="(item, index) in cellList" :key="index">
           <van-radio :name="index" checked-color="#ff5050">
             <i :class="`iconfont ${item.icon}`"></i>
-            <span>{{item.text}}</span>
+            <span>{{ item.text }}</span>
           </van-radio>
         </template>
       </van-radio-group>
@@ -27,11 +28,13 @@
 
 <script>
 import { computed, ref } from '@vue/runtime-core'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Dialog } from 'vant'
+import { payOrder } from 'network/order'
 export default {
   setup () {
     const route = useRoute()
+    const router = useRouter()
     const price = computed(() => {
       const price = {
         integer: 0,
@@ -48,6 +51,10 @@ export default {
       }
       return price
     })
+    // 订单ID
+    const orderId = computed(() => {
+      return route.params.orderId
+    })
     // 返回
     const onClickBack = () => {
       Dialog.confirm({
@@ -62,14 +69,22 @@ export default {
       { text: '支付宝支付', icon: 'icon-zhifubao' },
       { text: '微信支付', icon: 'icon-weixinzhifu' }
     ])
-    // 单选
+    // 选择支付方式
     const checked = ref(0)
     const ckType = computed(() => {
-      return checked.value ? 'wechatPay' : 'aliPay'
+      return checked.value ? 'wechat' : 'aliyun'
     })
     // 确认付款
-    const onConfirmPay = () => {
-      console.log('确认付款', ckType.value)
+    const onConfirmPay = async () => {
+      const res = await payOrder(orderId.value, { type: ckType.value })
+      if (res.status === 200) {
+        router.push({
+          path: '/pay',
+          query: {
+            code_url: res.data.qr_code_url
+          }
+        })
+      }
     }
     return {
       onClickBack,
@@ -79,7 +94,6 @@ export default {
       checked
     }
   }
-
 }
 </script>
 
@@ -128,7 +142,7 @@ export default {
         display: flex;
         align-items: center;
         flex: 1;
-        .iconfont  {
+        .iconfont {
           font-size: 30px;
           margin-right: 15px;
         }
@@ -136,10 +150,10 @@ export default {
           font-size: 18px;
         }
         .icon-zhifubao {
-          color: rgb(0,160,233);
+          color: rgb(0, 160, 233);
         }
         .icon-weixinzhifu {
-          color: rgb(9,187,7);
+          color: rgb(9, 187, 7);
         }
       }
     }

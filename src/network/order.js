@@ -31,11 +31,11 @@ export function getOrderDetail (orderId, data) {
 }
 
 // 订单支付,获得支付二维码
-export function payOrder (orderId, data) {
+export function payOrder (orderId, params) {
   return request({
     method: 'GET',
     url: `/api/orders/${orderId}/pay`,
-    data
+    params
   })
 }
 // 查询支付状态
@@ -47,11 +47,14 @@ export function getPayStatus (orderId) {
 }
 
 // 获取订单列表
-export function getOrdersData (data) {
+export function getOrdersData (status) {
   return request({
     method: 'GET',
     url: '/api/orders',
-    data
+    params: {
+      include: 'orderDetails.goods',
+      status: status
+    }
   })
 }
 
